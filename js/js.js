@@ -207,7 +207,7 @@ $(document).ready(function(){
 				update_total($container);
 			}
 		}).change();
-		$(".sale_item .unit_price, .sale_item .unit_price1, .sale_item .quantity, .sale_item .unit, .sale_item .total_kg, .purchase_item .quantity, .purchase_item .unit, .purchase_item .total_kg, .purchase_item .hundred_pieces_kg, .purchase_item .unit_price").change(function(){
+		$(".sale_item .unit_price, .sale_item .unit_price1, .sale_item .quantity, .sale_item, .sale_item, .purchase_item .quantity, .purchase_item .unit, .purchase_item, .purchase_item, .purchase_item .unit_price").change(function(){
 			$container=$(this).parents(".sale_item");
 			//$('.sale_item .quantity')		
 			if( $container.length > 0 ) {
@@ -284,20 +284,8 @@ function update_total($container){
 		$class="sale_item";
 	else
 		$class="purchase_item";
-		total_kg = $container.find(".unit").val();
-		console.log(total_kg);
-		if(total_kg==1){
-			$container.find(".total_price").val(parseFloat($container.find(".unit_price").val())*parseFloat($container.find(".total_kg").val()));
-			if($class=="purchase_item"){
-				$container.find(".quantity").val(parseFloat($container.find(".total_kg").val())/parseFloat($container.find(".hundred_pieces_kg").val())*100);
-			}
-
-			
-		}
-		else{
 			$container.find(".total_price").val(parseFloat($container.find(".unit_price").val())*parseFloat($container.find(".quantity").val()));
 			$container.find(".total_price1").val(parseFloat($container.find(".unit_price1").val())*parseFloat($container.find(".quantity").val()));
-		}
 	
 	$container=$container.parent();
 	$grand_total_item=$grand_total_price=$grand_total_price1=0;

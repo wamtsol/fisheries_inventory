@@ -15,8 +15,6 @@ if(isset($_POST["sales_add"])){
 			else{
 				$items_array[$item]=array(
 				    "unit_price" => $unit_price[$i],
-					"unit" => $unit[$i],
-					"total_kg" => $total_kg[$i],
 					"quantity" => $quantity[$i]
 				);
 			}
@@ -42,18 +40,10 @@ if(isset($_POST["sales_add"])){
 		foreach($items_array as $item_id=>$items){
 			$quantity = $items['quantity'];
 			$unit_price = $items['unit_price'];
-			$total_kg = $items['total_kg'];
-			$unit = $items['unit'];
-			//$total_price = $unit_price*$quantity;
-			if($unit==1){
-				$total_price=$unit_price*$total_kg;
-			}
-			else{
-				$total_price = $unit_price*$quantity;
-			}
+            $total_price = $unit_price*$quantity;
 			$grand_total_price += $total_price;
 			$total_quantity += $quantity;
-			doquery("insert into sales_items(sales_id, item_id, unit_price, unit, quantity, total_kg, total_price) values('".$sale_id."', '".$item_id."', '".$unit_price."', '".$unit."', '".$quantity."', '".$total_kg."', '".$total_price."')", $dblink);
+			doquery("insert into sales_items(sales_id, item_id, unit_price, quantity, total_price) values('".$sale_id."', '".$item_id."', '".$unit_price."', '".$quantity."', '".$total_price."')", $dblink);
 			
 			$GrpItems=doquery("select * from item_group where group_item_id='".slash($item_id)."'", $dblink);
 			if(numrows($GrpItems) > 0){

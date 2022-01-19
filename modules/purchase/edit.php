@@ -105,10 +105,7 @@ if(!defined("APP_START")) die("No Direct Access");
                                 <th width="2%" class="text-center">S.no</th>
                                 <th>Item</th>
                                 <th width="10%" class="text-right">Unit Price / KG</th>
-                                <th width="10%">Unit</th>
-                                <th width="10%" class="text-right">100 pieces</th>
                                 <th width="10%" class="text-right">Total Items</th>
-                                <th width="10%" class="text-right">Total KG</th>
                                 <th width="10%" class="text-right">Total Price</th>
                                 <th width="5%" class="text-center">Actions</th>
                             </tr>
@@ -138,16 +135,8 @@ if(!defined("APP_START")) die("No Direct Access");
                                             </select>
                                         </td>
                                         <td class="text-right"><input type="text" class="unit_price" name="unit_price[]" id="unit_price<?php echo $sn?>" value="<?php echo $unit_price[$sn-1]?>" /></td>
-                                        <td>
-                                            <select name="unit[]" id="unit" class="unit">
-                                                <option value="0"<?php echo ($unit[$sn-1]=="0")? " selected":"";?>>Unit Price</option>
-                                                <option value="1"<?php echo ($unit[$sn-1]=="1")? " selected":"";?>>KG</option>       
-                                            </select>
-                                        </td>
-                                        <td class="text-right"><input type="number" class="hundred_pieces_kg" name="hundred_pieces_kg[]" id="hundred_pieces_kg<?php echo $sn?>" value="<?php echo $hundred_pieces_kg[$sn-1]?>" style="width: 72px;" /></td>
                                         <td class="text-right"><input type="number" class="quantity" name="quantity[]" id="quantity<?php echo $sn?>" value="<?php echo $quantity[$sn-1]?>" /></td>
-                                        <td class="text-right"><input type="number" class="total_kg" name="total_kg[]" id="total_kg<?php echo $sn?>" value="<?php echo $total_kg[$sn-1]?>" style="width: 72px;" /></td>
-                                        <td class="text-right"><input type="text" class="total_price"  id="total_price<?php echo $sn?>" value="" style="width: 100px;" /></td>                        
+                                        <td class="text-right"><input type="text" class="total_price"  id="total_price<?php echo $sn?>" value="" style="width: 100px;" /></td>
                                         <td class="text-center"><a href="#" data-id="<?php echo $sn?>" class="add_list_item" data-container_class="purchase_item">Add</a> - <a href="#" data-id="<?php echo $sn?>" class="delete_list_item" data-container_class="purchase_item">Delete</a></td>
                                     </tr>
                                     <?php 
@@ -175,38 +164,30 @@ if(!defined("APP_START")) die("No Direct Access");
                                     </select>
                                 </td>
                                 <td class="text-right"><input type="text" id="unit_price<?php echo $sn?>"  name="unit_price[]" class="unit_price" value="" /></td>
-                                <td>
-                                    <select name="unit[]" id="unit" class="unit">
-                                        <option value="0"<?php echo ($unit=="0")? " selected":"";?>>Unit Price</option>
-                                        <option value="1"<?php echo ($unit=="1")? " selected":"";?>>KG</option>       
-                                    </select>
-                                </td>
-                                <td class="text-right"><input type="number" class="hundred_pieces_kg" name="hundred_pieces_kg[]" id="hundred_pieces_kg<?php echo $sn?>" value="0" style="width: 72px;" /></td>
                                 <td class="text-right"><input type="number" class="quantity" name="quantity[]" id="quantity<?php echo $sn?>" value="1" /></td>
-                                <td class="text-right"><input type="number" class="total_kg" name="total_kg[]" id="total_kg<?php echo $sn?>" value="0" style="width: 72px;" /></td>
-                                <td class="text-right"><input type="text" class="total_price" id="total_price<?php echo $sn?>" value="" /></td>                        
+                                <td class="text-right"><input type="text" class="total_price" id="total_price<?php echo $sn?>" value="" /></td>
                                 <td class="text-center"><a href="#" data-id="<?php echo $sn?>" class="add_list_item" data-container_class="purchase_item">Add</a> - <a href="#" data-id="<?php echo $sn?>" class="delete_list_item" data-container_class="purchase_item">Delete</a></td>
                             </tr>
                             <?php
                             }
                             ?>
                             <tr>
-                                <th colspan="7" class="text-right">Total Items</th>
+                                <th colspan="4" class="text-right">Total Items</th>
                                 <th class="text-right grand_total_item"></th>
                                 <th class="text-right">&nbsp;</th>
                             </tr>
                             <tr>
-                                <th colspan="7" class="text-right">Discount</th>
+                                <th colspan="4" class="text-right">Discount</th>
                                 <th class="text-right"><input type="number" class="discount" name="discount" id="discount" value="<?php echo $discount?>" style="text-align:right" data-container_class="purchase_item" /></th>
                                 <th class="text-right">&nbsp;</th>
                             </tr>
                             <tr>
-                                <th colspan="7" class="text-right">Total Price</th>
+                                <th colspan="4" class="text-right">Total Price</th>
                                 <th class="text-right grand_total_price"></th>
                                 <th class="text-right">&nbsp;</th>
                             </tr>
                             <tr>
-                                <th colspan="7" class="text-right">Payment Account</th>
+                                <th colspan="4" class="text-right">Payment Account</th>
                                 <th class="text-right"><select name="payment_account_id">
                                 	<option value="">Select Account</option>
                                     <?php
@@ -223,7 +204,7 @@ if(!defined("APP_START")) die("No Direct Access");
                                 <th class="text-right">&nbsp;</th>
                             </tr>
                             <tr>
-                                <th colspan="7" class="text-right">Payment Amount</th>
+                                <th colspan="4" class="text-right">Payment Amount</th>
                                 <th class="text-right"><input type="text" class="payment_amount" name="payment_amount" id="payment_amount" value="<?php echo $payment_amount?>" style="text-align:right" /></th>
                                 <th class="text-right">&nbsp;</th>
                             </tr>

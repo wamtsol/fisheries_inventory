@@ -18,9 +18,6 @@ if(isset($_POST["purchase_edit"])){
 			else{
 				$items_array[$item]=array(
 					"unit_price" => $unit_price[$i],
-					"unit" => $unit[$i],
-					"total_kg" => $total_kg[$i],
-					"hundred_pieces_kg" => $hundred_pieces_kg[$i],
 					"quantity" => $quantity[$i]
 				);
 			}
@@ -33,23 +30,17 @@ if(isset($_POST["purchase_edit"])){
 		$grand_total_price=$quantity=0;
 		foreach($items_array as $item_id=>$item){
 			$r=dofetch(doquery("select unit_price from items where id='".slash($item_id)."'", $dblink));
-			if($item["unit"]==1){
-				$total_price=$item["unit_price"]*$item["total_kg"];
-			}
-			else{
-				$total_price=$item["unit_price"]*$item["quantity"];
-			}
-			//$total_price=$item["unit_price"]*$item["quantity"];
+            $total_price=$item["unit_price"]*$item["quantity"];
 			$grand_total_price+=$total_price;
 			$quantity+=$item["quantity"];
 			$prev=doquery("select id, quantity from purchase_items where purchase_id='".$id."' and item_id='".$item_id."'", $dblink);
 			if(numrows($prev)){
 				$prev=dofetch($prev);
-				doquery("update purchase_items set `unit_price`='".$item["unit_price"]."', `hundred_pieces_kg`='".$item["hundred_pieces_kg"]."', `unit`='".$item["unit"]."', `quantity`='".$item["quantity"]."', `total_kg`='".$item["total_kg"]."', `total_price`='".$total_price."' where id='".$prev["id"]."'", $dblink);
+				doquery("update purchase_items set `unit_price`='".$item["unit_price"]."', `quantity`='".$item["quantity"]."', `total_price`='".$total_price."' where id='".$prev["id"]."'", $dblink);
 				doquery("update items set quantity=quantity+".($item["quantity"]-$prev["quantity"])." where id='".slash($item_id)."'", $dblink);
 			}
 			else{
-				doquery("insert into purchase_items(purchase_id, item_id, unit_price, hundred_pieces_kg, unit, quantity, total_kg, total_price) values('".$id."', '".$item_id."', '".$item["unit_price"]."', '".$item["hundred_pieces_kg"]."', '".$item["unit"]."', '".$item["quantity"]."', '".$item["total_kg"]."', '".$total_price."')", $dblink);
+				doquery("insert into purchase_items(purchase_id, item_id, unit_price, quantity, total_price) values('".$id."', '".$item_id."', '".$item["unit_price"]."', '".$item["quantity"]."', '".$total_price."')", $dblink);
 				doquery("update items set quantity=quantity+".$item["quantity"]." where id='".slash($item_id)."'", $dblink);	
 			}
 		}
@@ -116,9 +107,6 @@ if(isset($_GET["id"]) && $_GET["id"]!=""){
 			while($r=dofetch($rs)){
 				$items[]=$r["item_id"];
 				$unit_price[]=$r["unit_price"];
-				$hundred_pieces_kg[]=$r["hundred_pieces_kg"];
-				$unit[]=$r["unit"];
-				$total_kg[]=$r["total_kg"];
 				$quantity[]=$r["quantity"];
 			}
 		}
