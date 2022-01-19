@@ -1,5 +1,8 @@
 <?php
 if(!defined("APP_START")) die("No Direct Access");
+$discount=0;
+$cash_receive=0;
+$cash_return=0;
 ?>
 <div class="page-header">
 	<h1 class="title">Edit Purchase</h1>

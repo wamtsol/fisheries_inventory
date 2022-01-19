@@ -43,7 +43,7 @@ p{margin:0 0 5px 0}
 	margin-bottom: 10px;
 }
 #logo img {
-    width: 100%;
+    width: 80%;
 }
 #right_title {
 	font-size: 18px;
@@ -348,7 +348,7 @@ h6 {
                 <th width="10%">Amount</th>
             </tr>
             <?php
-            $items=doquery("select a.*, b.type, b.title, from sales_items a left join items b on a.item_id=b.id where sales_id='".$sale["id"]."' order by a.id", $dblink);
+            $items=doquery("select a.*, b.type, b.title from sales_items a left join items b on a.item_id=b.id where sales_id='".$sale["id"]."' order by a.id", $dblink);
             if(numrows($items)>0){
                 $sn=1;
                 while($item=dofetch($items)){

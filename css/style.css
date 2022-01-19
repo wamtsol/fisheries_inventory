@@ -322,7 +322,7 @@ App Logo
 .applogo {
   width: 250px;
   height: 60px;
-  background: rgba(0, 0, 0, 0.14);
+  background: #ffffff;
   color: #fff;
   position: relative;
   padding: 19px 0 0 0px;
@@ -4467,10 +4467,10 @@ body.popup-content {
 }
 
 .logo > img {
-    width: 160px;
+    width: 100px;
 }
 .applogo {
-    padding: 15px 0 0;
+    padding: 0px;
 }
 .page-header .btn.btn-light:last-child {
 }

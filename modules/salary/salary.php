@@ -52,7 +52,7 @@ $is_search = true;
             </thead>
             <tbody>
                 <?php
-                if( count( $employees > 0 ) ) {
+                if( count( $employees  ) > 0 ) {
                     $sn=1;
                     
                     foreach( $employees as $employee ){
