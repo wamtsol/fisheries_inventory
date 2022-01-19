@@ -207,7 +207,7 @@ $(document).ready(function(){
 				update_total($container);
 			}
 		}).change();
-		$(".sale_item .unit_price, .sale_item .unit_price1, .sale_item .quantity, .sale_item, .sale_item, .purchase_item .quantity, .purchase_item .unit, .purchase_item, .purchase_item, .purchase_item .unit_price").change(function(){
+		$(".sale_item .unit_price, .sale_item .unit_price1, .sale_item .quantity, .sale_item .unit, .sale_item .total_kg, .purchase_item .quantity, .purchase_item .unit, .purchase_item .total_kg, .purchase_item .hundred_pieces_kg, .purchase_item .unit_price").change(function(){
 			$container=$(this).parents(".sale_item");
 			//$('.sale_item .quantity')		
 			if( $container.length > 0 ) {
