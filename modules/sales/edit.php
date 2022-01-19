@@ -78,7 +78,7 @@ $cash_return=0;
             </div>
             <div class="col-sm-10">
                 <select name="town" id="town" class="custom_select">
-                    <option value=""<?php echo ($town=="")? " selected":"";?>>Select Town</option>
+                    <option value="0"<?php echo ($town=="")? " selected":"";?>>Select Town</option>
                     <option value="1"<?php echo ($town=="1")? " selected":"";?>>Home Town</option>
                     <option value="2"<?php echo ($town=="2")? " selected":"";?>>Out Of Town</option>
                 </select>
