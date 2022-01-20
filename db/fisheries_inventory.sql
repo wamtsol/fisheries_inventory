@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 20, 2022 at 11:10 AM
+-- Generation Time: Jan 20, 2022 at 03:58 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.3.33
 
@@ -202,7 +202,8 @@ CREATE TABLE `customer_payment` (
 --
 
 INSERT INTO `customer_payment` (`id`, `customer_id`, `datetime_added`, `amount`, `type`, `account_id`, `details`, `payment_image`, `status`, `ts`) VALUES
-(1, 1, '2022-01-18 17:08:00', '3500.00', 0, 3, 'det', NULL, 1, '2022-01-18 12:08:14');
+(1, 1, '2022-01-18 17:08:00', '3500.00', 0, 3, 'det', NULL, 1, '2022-01-18 12:08:14'),
+(2, 1, '2022-01-20 19:58:00', '100495.00', 0, 4, 'Payment againset Sales #9', NULL, 1, '2022-01-20 15:20:29');
 
 -- --------------------------------------------------------
 
@@ -300,7 +301,6 @@ CREATE TABLE `holidays` (
 
 CREATE TABLE `items` (
   `id` int(11) NOT NULL,
-  `type` int(1) NOT NULL DEFAULT '0' COMMENT '0:simple;1:group',
   `title` varchar(100) NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
   `quantity` int(11) NOT NULL,
@@ -313,29 +313,10 @@ CREATE TABLE `items` (
 -- Dumping data for table `items`
 --
 
-INSERT INTO `items` (`id`, `type`, `title`, `unit_price`, `quantity`, `low_stock_quantity`, `status`, `ts`) VALUES
-(1, 0, 'first item', '20099.00', 4, 2299, 1, '2022-01-18 11:18:25'),
-(2, 0, 'second item', '99.00', 56, 99, 1, '2022-01-18 11:35:38');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `item_group`
---
-
-CREATE TABLE `item_group` (
-  `id` int(11) NOT NULL,
-  `group_item_id` int(11) NOT NULL,
-  `item_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `item_group`
---
-
-INSERT INTO `item_group` (`id`, `group_item_id`, `item_id`, `quantity`) VALUES
-(1, 1, 2, 20);
+INSERT INTO `items` (`id`, `title`, `unit_price`, `quantity`, `low_stock_quantity`, `status`, `ts`) VALUES
+(1, 'first item', '20099.00', 0, 2299, 1, '2022-01-18 11:18:25'),
+(2, 'second item', '99.00', 71, 99, 1, '2022-01-18 11:35:38'),
+(3, 'new', '99.00', 5, 2, 1, '2022-01-20 14:58:13');
 
 -- --------------------------------------------------------
 
@@ -612,8 +593,7 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `datetime_added`, `type`, `customer_name`, `phone`, `address`, `customer_id`, `total_items`, `total_price`, `discount`, `net_price`, `customer_payment_id`, `cash_receive`, `cash_return`, `town`, `bill_image`, `status`, `ts`) VALUES
-(1, '2022-01-18 16:55:00', 0, 'second customer ', '03453607906', 'addr', 2, 1, '20099.00', '0.00', '20099.00', NULL, '0.00', '0.00', 1, NULL, 1, '2022-01-19 13:59:01'),
-(7, '2022-01-19 21:20:00', 0, 'first customer ', '03103898208', 'addr', 1, 15, '1485.00', '0.00', '1485.00', NULL, '0.00', '0.00', 0, NULL, 1, '2022-01-20 11:08:16');
+(9, '2022-01-20 19:58:00', 0, 'first customer ', '03103898208', 'addr', 1, 5, '100495.00', '0.00', '100495.00', 2, '0.00', '0.00', 0, NULL, 1, '2022-01-20 15:20:29');
 
 -- --------------------------------------------------------
 
@@ -635,8 +615,7 @@ CREATE TABLE `sales_items` (
 --
 
 INSERT INTO `sales_items` (`id`, `sales_id`, `item_id`, `unit_price`, `quantity`, `total_price`) VALUES
-(1, 1, 1, '20099.00', 1, '20099.00'),
-(7, 7, 2, '99.00', 15, '1485.00');
+(9, 9, 1, '20099.00', 5, '100495.00');
 
 -- --------------------------------------------------------
 
@@ -882,14 +861,6 @@ ALTER TABLE `items`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `item_group`
---
-ALTER TABLE `item_group`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `group_item_id` (`group_item_id`),
-  ADD KEY `item_id` (`item_id`);
-
---
 -- Indexes for table `menu`
 --
 ALTER TABLE `menu`
@@ -1029,7 +1000,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employee_attendance`
@@ -1065,13 +1036,7 @@ ALTER TABLE `holidays`
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `item_group`
---
-ALTER TABLE `item_group`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `menu`
@@ -1107,13 +1072,13 @@ ALTER TABLE `salary_payment`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `stock_movement`
