@@ -6,12 +6,6 @@ if(isset($_GET["id"]) && !empty($_GET["id"])){
 	$deleted_items = doquery( "select item_id, quantity from sales_items where sales_id='".$id."'", $dblink );
 	if( numrows( $deleted_items ) > 0 ) {
 		while( $deleted_item = dofetch( $deleted_items ) ) {
-			$GrpItems=doquery("select * from item_group where group_item_id='".slash($deleted_item[ "item_id" ])."'", $dblink);
-			if(numrows($GrpItems) > 0){
-				while($grpItemData=dofetch($GrpItems)){
-					doquery("update items set quantity=quantity+".($grpItemData['quantity']*$deleted_item[ "quantity" ])." where id='".slash($grpItemData['item_id'])."'", $dblink);
-				}
-			}	
 			doquery("update items set quantity=quantity+".$deleted_item[ "quantity" ]." where id='".slash($deleted_item["item_id"])."'", $dblink);
 		}
 	}

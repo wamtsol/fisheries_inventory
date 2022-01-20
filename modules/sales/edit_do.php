@@ -62,23 +62,11 @@ if(isset($_POST["sales_edit"])){
 			else {
 				doquery("insert into sales_items(sales_id, item_id, unit_price, quantity, total_price) values('".$id."', '".$item_id."', '".$item['unit_price']."', '".$item['quantity']."', '".$item_price."')", $dblink);
 			}
-			$GrpItems=doquery("select * from item_group where group_item_id='".slash($item_id)."'", $dblink);
-			if(numrows($GrpItems) > 0){
-				while($grpItemData=dofetch($GrpItems)){
-					doquery("update items set quantity=quantity-".($grpItemData['quantity']*$quantity_to_update)." where id='".slash($grpItemData['item_id'])."'", $dblink);
-				}
-			}
 			doquery("update items set quantity=quantity-".$quantity_to_update." where id='".slash($item_id)."'", $dblink);
 		}
 		$deleted_items = doquery( "select item_id, quantity from sales_items where sales_id='".$id."' and item_id not in (".implode(",", $item_ids).")", $dblink );
 		if( numrows( $deleted_items ) > 0 ) {
 			while( $deleted_item = dofetch( $deleted_items ) ) {
-				$GrpItems=doquery("select * from item_group where group_item_id='".slash($deleted_item[ "item_id" ])."'", $dblink);
-				if(numrows($GrpItems) > 0){
-					while($grpItemData=dofetch($GrpItems)){
-						doquery("update items set quantity=quantity+".($grpItemData['quantity']*$deleted_item[ "quantity" ])." where id='".slash($grpItemData['item_id'])."'", $dblink);
-					}
-				}	
 				doquery("update items set quantity=quantity+".$deleted_item[ "quantity" ]." where id='".slash($deleted_item["item_id"])."'", $dblink);
 			}
 		}

@@ -125,31 +125,16 @@ div#receipt {
                 <th width="10%">Amount</th>
             </tr>
             <?php
-            $items=doquery("select a.*, b.type, b.title from sales_items a left join items b on a.item_id=b.id where sales_id='".$sale["id"]."' order by a.id", $dblink);
+            $items=doquery("select a.*, b.title from sales_items a left join items b on a.item_id=b.id where sales_id='".$sale["id"]."' order by a.id", $dblink);
             if(numrows($items)>0){
                 $sn=1;
                 while($item=dofetch($items)){
-					$unit = array();
-					$price = array();
-					$pricenew = array();
-					if( $item["type"] == 0 ) {
-						$unit[]=$item["quantity"];
-						$price[] = curr_format($item["unit_price"]);
-					}
-					else{
-						$children = doquery("select a.quantity, b.unit_price from item_group a inner join items b on a.item_id=b.id where group_item_id = '".$item["item_id"]."'", $dblink);
-						while($child=dofetch($children)){
-							$unit[] = $child[ "quantity" ]*$item["quantity"];
-							$pricenew[] = $item["unit_price"]/$child[ "quantity" ];
-							$price[] = curr_format($child["unit_price"]);
-						}
-					}
                     ?>
                     <tr>
                     	<td style="text-align:center"><?php echo $sn++?></td>
                         <td style="text-align:left;"><?php echo unslash($item["title"])?></td>
-                        <td style="text-align:center; font-size:14px;"><?php echo implode("/",$unit)?></td>
-                        <td style="text-align:right; font-size:14px;"><?php echo curr_format(implode("/",$pricenew));?></td>
+                        <td style="text-align:center; font-size:14px;"><?php echo $item["quantity"]?></td>
+                        <td style="text-align:right; font-size:14px;"><?php echo curr_format($item["unit_price"]);?></td>
                         <td style="text-align:right; font-size:14px;"><?php echo curr_format($item["total_price"])?></td>
                         
                         

@@ -44,13 +44,6 @@ if(isset($_POST["sales_add"])){
 			$grand_total_price += $total_price;
 			$total_quantity += $quantity;
 			doquery("insert into sales_items(sales_id, item_id, unit_price, quantity, total_price) values('".$sale_id."', '".$item_id."', '".$unit_price."', '".$quantity."', '".$total_price."')", $dblink);
-			
-			$GrpItems=doquery("select * from item_group where group_item_id='".slash($item_id)."'", $dblink);
-			if(numrows($GrpItems) > 0){
-				while($grpItemData=dofetch($GrpItems)){
-					doquery("update items set quantity=quantity-".($grpItemData['quantity']*$quantity)." where id='".slash($grpItemData['item_id'])."'", $dblink);
-				}
-			}	
 			doquery("update items set quantity=quantity-".$quantity." where id='".slash($item_id)."'", $dblink);
 		}
 		doquery("update sales set total_items=".$total_quantity.",total_price='".$grand_total_price."', discount='".$discount."', net_price='".($grand_total_price-$discount)."', cash_receive='".$cash_receive."', cash_return='".$cash_return."' where id='".$sale_id."'", $dblink);
