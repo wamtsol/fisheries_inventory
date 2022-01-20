@@ -157,21 +157,14 @@ else{
                                                 $rs=doquery($sql, $dblink);
                                                 if(numrows($rs)>0){
                                                     while($r=dofetch($rs)){
-														if($r['type']==1)
-															$groupItem .='<option value="'.$r["id"].'"'.($item==$r["id"]?" selected":"").'>'. unslash($r["title"]) .'  </option>';
-														else
+
 															$singleItem .='<option value="'.$r["id"].'"'.($item==$r["id"]?" selected":"").'> '. unslash($r["title"]) .'  </option>';  
                                                     }
                                                 }
                                                 ?>
                                                 <select name="items[]" class="item_select" >
                                                 	<option value="">Select Item</option>
-                                                 	<optgroup label="GroupItems">
-                                                		<?php echo $groupItem;?>
-                                                 	</optgroup>
-                                                 	<optgroup label="Single Items">
                                                 		<?php echo $singleItem;?>
-                                                 	</optgroup>
                                             	</select>
                                                 <span class="qty"></span>
                                         </td>
@@ -190,15 +183,11 @@ else{
                                 <td class="text-center serial_number"><?php echo $sn;?></td>
                                 <td>
                                         <?php
-										$groupItem='';
 										$singleItem='';
                                         $sql="select * from items where status=1 order by title";
                                         $rs=doquery($sql, $dblink);
                                         if(numrows($rs)>0){
                                             while($r=dofetch($rs)){
-												if($r['type']==1)
-												$groupItem .='<option value="'.$r["id"].'">'. unslash($r["title"]) .'  </option>';
-												else
 												$singleItem .='<option value="'.$r["id"].'">'. unslash($r["title"]) .'  </option>';																
                                                 ?>
 												<?php
@@ -207,13 +196,8 @@ else{
                                         ?>
                                         
                                       <select name="items[]" class="item_select">
-                                        <option value="">Select Item</option>  
-                                     	<optgroup label="GroupItems">
-                                                <?php echo $groupItem;?>
-                                                 </optgroup>
-                                                   <optgroup label="Single Items">
-                                                	<?php echo $singleItem;?>
-                                                 </optgroup>
+                                        <option value="">Select Item</option>
+                                          <?php echo $singleItem;?>
                                     </select>
                                     <span class="qty"></span>
                                 </td>

@@ -12,25 +12,6 @@ if(!defined("APP_START")) die("No Direct Access");
 </div>
 <form action="items_manage.php?tab=edit" method="post" enctype="multipart/form-data" name="frmAdd"  class="form-horizontal form-horizontal-left">
 	<input type="hidden" name="id" value="<?php echo $id;?>">
-    <div class="form-group">
-    	<div class="row">
-            <div class="col-sm-2 control-label">
-                <label class="form-label" for="type">Product Type</label>
-            </div>
-            <div class="col-sm-10">
-                <select name="type" id="type" title="Choose Option">
-                    <option value="">Select Product Type</option>
-                    <?php
-                    foreach ($product_type as $key=>$value) {
-                        ?>
-                        <option value="<?php echo $key?>"<?php echo $key==$type?' selected="selected"':""?>><?php echo $value ?></option>
-                        <?php
-                    }
-                    ?>
-                </select>
-            </div>
-        </div>
-  	</div>
   	<div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">

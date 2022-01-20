@@ -6,7 +6,7 @@ if(isset($_POST["items_add"])){
 	if(empty($title))
 		$err="Fields with (*) are Mandatory.<br />";
 	if($err==""){
-		$sql="INSERT INTO items (type, title, unit_price, quantity, low_stock_quantity) VALUES ('".slash($type)."','".slash($title)."','".slash($unit_price)."','".slash($quantity)."', '".slash($low_stock_quantity)."')";
+		$sql="INSERT INTO items (title, unit_price, quantity, low_stock_quantity) VALUES ('".slash($title)."','".slash($unit_price)."','".slash($quantity)."', '".slash($low_stock_quantity)."')";
 		doquery($sql,$dblink);
 		$id = inserted_id();
 		unset($_SESSION["items_manage"]["add"]);

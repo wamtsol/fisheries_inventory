@@ -130,7 +130,7 @@ $cash_return=0;
                                                 if(numrows($rs)>0){
                                                     while($r=dofetch($rs)){
                                                         ?>
-                                                        <option value="<?php echo $r["id"]?>"<?php if($items[$sn-1]==$r["id"]) echo ' selected="selected"';?>><?php echo unslash($r["title"])?></option>
+                                                        <option value="<?php echo $r["id"]?>"<?php if($items["id"]==$r["id"]) echo ' selected="selected"';?>><?php echo unslash($r["title"])?></option>
                                                         <?php
                                                     }
                                                 }

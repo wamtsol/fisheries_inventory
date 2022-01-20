@@ -4,7 +4,6 @@ if(isset($_SESSION["items_manage"]["add"])){
 	extract($_SESSION["items_manage"]["add"]);	
 }
 else{
-	$type="";
 	$title="";
 	$unit_price="";
 	$quantity="";
@@ -24,26 +23,6 @@ else{
 	<?php
     	$i=0;
   	?>
-    <div class="form-group">
-    	<div class="row">
-            <div class="col-sm-2 control-label">
-                <label class="form-label" for="type">Product Type</label>
-            </div>
-            <div class="col-sm-10">
-            	<select name="type" id="type" title="Choose Option">
-                    <option value="">Select Product Type</option>
-                    <?php
-                    foreach ($product_type as $key=>$value) {
-                        ?>
-                        <option value="<?php echo $key?>"<?php echo $key==$type?' selected="selected"':""?>><?php echo $value ?></option>
-                        <?php
-                    }
-                    ?>
-                </select>
-                
-            </div>
-        </div>
-  	</div>
   	<div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">

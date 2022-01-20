@@ -1,143 +1,140 @@
 <?php
-date_default_timezone_set('Asia/karachi');
-include('vendor/autoload.php');
-
-$helper = new \PhpOffice\PhpSpreadsheet\Helper\Sample();
-if (!defined('EOL')) {
-    define('EOL', $helper->isCli() ? PHP_EOL : '<br />');
-}
-// Return to the caller script when runs by CLI
-/*if ($helper->isCli()) {
-	echo 'Hello';
-    return;
-}*/
-
-// Create new Spreadsheet object
-$spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-// Set document properties
-$spreadsheet->getProperties()
-        ->setCreator($site_title)
-        ->setLastModifiedBy($site_title)
-        ->setTitle('Stock List')
-        ->setSubject('List of All Available Stock')
-        ->setDescription('')
-        ->setKeywords('')
-        ->setCategory('');
-$spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Stock List');
-$spreadsheet->setActiveSheetIndex(0)->mergeCells("A1:F4");
-$spreadsheet->setActiveSheetIndex(0)->getStyle('A1:F4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)->setVERTICAL(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-$spreadsheet->setActiveSheetIndex(0)->getStyle('A1:F4')->getFont()->setBold(true)->setSize(20);
-// Add some data
-$spreadsheet->setActiveSheetIndex(0)
-        ->setCellValue('A5', 'S.No')
-		->setCellValue('B5', 'Name')
-		->setCellValue('C5', 'Urdu Name')
-		->setCellValue('D5', 'Packing')
-		->setCellValue('E5', 'Rate/Piece')
-		->setCellValue('F5', 'Packet Price');
+if(!defined("APP_START")) die("No Direct Access");
+$q="";
 $extra='';
-if(isset($_SESSION["items"]["list"]["q"]) && !empty($_SESSION["items"]["list"]["q"])){
-	$q=$_SESSION["items"]["list"]["q"];
-	$extra.=" and title like '%".$q."%'";
+$is_search=false;
+if(isset($_GET["q"])){
+    $q=slash($_GET["q"]);
+    $_SESSION["items"]["list"]["q"]=$q;
 }
-if(isset($_SESSION["items"]["list"]["type"]) && $_SESSION["items"]["list"]["type"]!=""){
-	$type=$_SESSION["items"]["list"]["type"];
-	$extra.=" and type like '%".$type."%'";
+if(isset($_SESSION["items"]["list"]["q"]))
+    $q=$_SESSION["items"]["list"]["q"];
+else
+    $q="";
+if(!empty($q)){
+    $extra.=" and title like '%".$q."%'";
+    $is_search=true;
 }
-if(isset($_SESSION["items"]["list"]["stock"]) && $_SESSION["items"]["list"]["stock"]!=""){
-	$stock=$_SESSION["items"]["list"]["stock"];
-	if( $stock == "0" ){
-		$extra.=" and quantity>10";
-	}
-	if( $stock == "1" ){
-		$extra.=" and quantity<=10";
-	}
-	if( $stock == "2" ){
-		$extra.=" and quantity=0";
-	}
+if(isset($_GET["stock"])){
+    $stock=slash($_GET["stock"]);
+    $_SESSION["items"]["list"]["stock"]=$stock;
+}
+if(isset($_SESSION["items"]["list"]["stock"]))
+    $stock=$_SESSION["items"]["list"]["stock"];
+else
+    $stock="";
+if($stock != ""){
+    if( $stock == "0" ){
+        $extra.=" and quantity>low_stock_quantity";
+    }
+    if( $stock == "1" ){
+        $extra.=" and quantity<=low_stock_quantity";
+    }
+    if( $stock == "2" ){
+        $extra.=" and quantity=0";
+    }
+    $is_search=true;
 }
 $order_by = "title";
 $order = "asc";
+if( isset($_GET["order_by"]) ){
+    $_SESSION["items"]["list"]["order_by"]=slash($_GET["order_by"]);
+}
 if( isset( $_SESSION["items"]["list"]["order_by"] ) ){
-	$order_by = $_SESSION["items"]["list"]["order_by"];
+    $order_by = $_SESSION["items"]["list"]["order_by"];
+}
+if( isset($_GET["order"]) ){
+    $_SESSION["items"]["list"]["order"]=slash($_GET["order"]);
 }
 if( isset( $_SESSION["items"]["list"]["order"] ) ){
-	$order = $_SESSION["items"]["list"]["order"];
+    $order = $_SESSION["items"]["list"]["order"];
 }
 $orderby = $order_by." ".$order;
-$sql="select * from items where 1 $extra order by $orderby";
-$rs=doquery($sql, $dblink);
-if(numrows($rs)>0){
-	$sn=6;
-	while($r=dofetch($rs)){
-		$unit = array();
-		if( $r["type"] == 0 ) {
-			$unit[]=1;
-		}
-		else{
-			$children = doquery("select quantity from item_group where group_item_id = '".$r["id"]."'", $dblink);
-			while($child=dofetch($children)){
-				$unit[] = $child[ "quantity" ];
-			}
-		}
-		$spreadsheet->setActiveSheetIndex(0)
-			->setCellValue('A'.$sn, $sn-5)
-			->setCellValue('B'.$sn, unslash($r["title"]))
-			->setCellValue('C'.$sn, unslash($r["name_in_urdu_text"]))
-			->setCellValue('D'.$sn, implode("/", $unit))
-			->setCellValue('E'.$sn, curr_format($r["unit_price"]/$unit[0]))
-			->setCellValue('F'.$sn, curr_format($r["unit_price"]));
-		$spreadsheet->setActiveSheetIndex(0)->getStyle("A".$sn.":F".$sn."")->applyFromArray(
-			array(
-				'borders' => array(
-					'allborders' => array(
-						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-						'color' => array('rgb' => '000000')
-					)
-				)
-			)
-		);
-		$spreadsheet->setActiveSheetIndex(0)->getStyle('A'.$sn)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-		$spreadsheet->setActiveSheetIndex(0)->getStyle('D'.$sn)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-		$spreadsheet->setActiveSheetIndex(0)->getStyle('E'.$sn)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-		$spreadsheet->setActiveSheetIndex(0)->getStyle('F'.$sn)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
-		$sn++;
-	}
-}
-$spreadsheet->setActiveSheetIndex(0)->getStyle("A5:F5")->applyFromArray(
-    array(
-        'borders' => array(
-            'allborders' => array(
-                'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                'color' => array('rgb' => '000000')
-            )
-        )
-    )
-);
-$spreadsheet->setActiveSheetIndex(0)->getStyle("A5:F5")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-$spreadsheet->setActiveSheetIndex(0)->getStyle("A5:F5")->getFont()->setBold(true);
-
-$spreadsheet->setActiveSheetIndex(0)->getColumnDimension('A')->setAutoSize(true);
-$spreadsheet->setActiveSheetIndex(0)->getColumnDimension('B')->setAutoSize(true);
-$spreadsheet->setActiveSheetIndex(0)->getColumnDimension('C')->setAutoSize(true);
-$spreadsheet->setActiveSheetIndex(0)->getColumnDimension('D')->setAutoSize(true);
-$spreadsheet->setActiveSheetIndex(0)->getColumnDimension('E')->setAutoSize(true);
-$spreadsheet->setActiveSheetIndex(0)->getColumnDimension('F')->setAutoSize(true);
-// Save
-// Redirect output to a client's web browser (Xls)
-header('Content-Type: application/vnd.ms-excel');
-header('Content-Disposition: attachment;filename="StockList"');
-header('Cache-Control: max-age=0');
-// If you're serving to IE 9, then the following may be needed
-header('Cache-Control: max-age=1');
-
-// If you're serving to IE over SSL, then the following may be needed
-header('Expires: '.date("D, d M Y H:i:s").' GMT'); // Date in the past
-header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-header('Pragma: public'); // HTTP/1.0
-
-$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Excel2007');
-$writer->save('php://output');
-die;
 ?>
+    <style>
+        h1, h2, h3, p {
+            margin: 0 0 10px;
+        }
+
+        body {
+            margin:  0;
+            font-family:  Arial;
+            font-size:  11px;
+        }
+        .head th, .head td{ border:0;}
+        th, td {
+            border: solid 1px #000;
+            padding: 5px 5px;
+            font-size: 11px;
+            vertical-align:top;
+        }
+        table table th, table table td{
+            padding:3px;
+        }
+        table {
+            border-collapse:  collapse;
+            max-width:1200px;
+            margin:0 auto;
+        }
+    </style>
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <tr class="head">
+            <th colspan="6">
+                <h1><?php echo get_config( 'site_title' )?></h1>
+                <h2>Items</h2>
+                <p>
+                    <?php
+                        echo "List of";
+                        if( !empty( $q ) ){
+                            echo " Item: ".$q;
+                        }
+                    ?>
+                </p>
+            </th>
+        </tr>
+        <tr>
+            <th width="5%" align="center">S.no</th>
+            <th align="right">Title</th>
+            <th align="right">Unit Price</th>
+            <th align="right">Quantity</th>
+        </tr>
+        <?php
+        $sql="select * from items where 1 $extra order by $orderby";
+        $rs=doquery( $sql, $dblink );
+        $total_unit_price=0;
+        $total_quantity=0;
+        if(numrows($rs)>0){
+            $sn=1;
+            while($r=dofetch($rs)){
+                $total_unit_price+=$r["unit_price"];
+                $total_quantity+=$r["quantity"];
+                ?>
+                <tr>
+                    <td class="text-center"><?php echo $sn;?></td>
+                    <td><?php echo unslash($r["title"]); ?></td>
+                    <td><?php echo curr_format($r["unit_price"]); ?></td>
+                    <td><?php echo curr_format($r["quantity"]); ?></td>
+                </tr>
+                <?php
+                $sn++;
+            }
+            ?>
+            <tr>
+                <td colspan="1"></td>
+                <td align="right">Total</td>
+                <td><?php echo curr_format( $total_unit_price )?></td>
+                <td><?php echo curr_format( $total_quantity )?></td>
+            </tr>
+            <?php
+        }
+        else{
+            ?>
+            <tr>
+                <td colspan="3"  class="no-record">No Result Found</td>
+            </tr>
+            <?php
+        }
+        ?>
+    </table>
+<?php
+die;

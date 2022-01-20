@@ -28,18 +28,6 @@ if(!empty($q)){
 	$extra.=" and title like '%".$q."%'";
 	$is_search=true;
 }
-if(isset($_GET["type"])){
-	$type=slash($_GET["type"]);
-	$_SESSION["items"]["list"]["type"]=$type;
-}
-if(isset($_SESSION["items"]["list"]["type"]))
-	$type=$_SESSION["items"]["list"]["type"];
-else
-	$type="";
-if($type!=""){
-	$extra.=" and type='".$type."'";
-	$is_search=true;
-}
 if(isset($_GET["stock"])){
 	$stock=slash($_GET["stock"]);
 	$_SESSION["items"]["list"]["stock"]=$stock;

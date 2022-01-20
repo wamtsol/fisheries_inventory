@@ -15,18 +15,6 @@ if(!empty($q)){
 	$extra.=" and title like '%".$q."%'";
 	$is_search=true;
 }
-if(isset($_GET["type"])){
-	$type=slash($_GET["type"]);
-	$_SESSION["items"]["list"]["type"]=$type;
-}
-if(isset($_SESSION["items"]["list"]["type"]))
-	$type=$_SESSION["items"]["list"]["type"];
-else
-	$type="";
-if($type!=""){
-	$extra.=" and type='".$type."'";
-	$is_search=true;
-}
 if(isset($_GET["stock"])){
 	$stock=slash($_GET["stock"]);
 	$_SESSION["items"]["list"]["stock"]=$stock;
@@ -85,18 +73,6 @@ $orderby = $order_by." ".$order;
 	<li class="col-xs-12 col-lg-12 col-sm-12">
         <div>
         	<form class="form-horizontal" action="" method="get">
-            	<div class="col-sm-3">
-                	<select name="type" id="type" title="Choose Option">
-                        <option value="">Select Product Type</option>
-                        <?php
-                        foreach ($product_type as $key=>$value) {
-                            ?>
-                            <option value="<?php echo $key?>"<?php echo ($type!="" && $key==$type)?' selected="selected"':""?>><?php echo $value ?></option>
-                            <?php
-                        }
-                        ?>
-                    </select>
-                </div>
                 <div class="col-sm-3">
                 	<select name="stock" id="stock">
                     	<option value="">Select Stock</option>
@@ -124,20 +100,6 @@ $orderby = $order_by." ".$order;
                 <th class="text-center" width="5%"><div class="checkbox checkbox-primary">
                     <input type="checkbox" id="select_all" value="0" title="Select All Records">
                     <label for="select_all"></label></div></th>
-                <th width="15%">
-                	<a href="items_manage.php?order_by=type&order=<?php echo $order=="asc"?"desc":"asc"?>" class="sorting">
-                    	Product Type 
-                        <?php
-						if( $order_by == "type" ) {
-							?>
-							<span class="sort-icon">
-                                <i class="fa fa-angle-<?php echo $order=="asc"?"up":"down"?>" data-hover_in="<?php echo $order=="asc"?"down":"up"?>" data-hover_out="<?php echo $order=="desc"?"down":"up"?>" aria-hidden="true"></i>
-                            </span>
-							<?php
-						}
-						?>
- 					</a>
- 				</th>
                 <th width="17%">
                 	<a href="items_manage.php?order_by=title&order=<?php echo $order=="asc"?"desc":"asc"?>" class="sorting">
                     	Title
@@ -180,7 +142,6 @@ $orderby = $order_by." ".$order;
 						?>
  					</a>
                 </th>
-                <th class="text-center" width="10%">Item Group</th>
                 <th class="text-center" width="5%">Status</th>
                 <th class="text-center" width="10%">Actions</th>
             </tr>
@@ -198,21 +159,9 @@ $orderby = $order_by." ".$order;
                             <input type="checkbox" name="id[]" id="<?php echo "rec_".$sn?>"  value="<?php echo $r["id"]?>" title="Select Record" />
                             <label for="<?php echo "rec_".$sn?>"></label></div>
                         </td>
-                        <td><?php echo getProductType(unslash($r["type"])); ?></td>
                         <td><?php echo unslash($r["title"]); ?></td>
                         <td class="text-right"><?php echo curr_format(unslash($r["unit_price"])); ?></td>
                         <td class="text-right"><?php echo unslash($r["quantity"]); ?></td>
-                        <td class="text-center">
-                        	<?php
-                            if( $r["type"] != 0 ) {
-								?>
-                        		<a class="fancybox_iframe red item-group" title="Edit Record" href="item_group_manage.php?parent_id=<?php echo $r['id']?>">
-                            	    <i class="fa fa-sitemap" aria-hidden="true"></i>
-                            	</a>
-                                <?php
-							}
-							?>
-                        </td>
                         <td class="text-center"><a href="items_manage.php?id=<?php echo $r['id'];?>&tab=status&s=<?php echo ($r["status"]==0)?1:0;?>">
                             <?php
                             if($r["status"]==0){
@@ -238,7 +187,7 @@ $orderby = $order_by." ".$order;
                 }
                 ?>
                 <tr>
-                    <td colspan="6" class="actions">
+                    <td colspan="5" class="actions">
                         <select name="bulk_action" id="bulk_action" title="Choose Action">
                             <option value="null">Bulk Action</option>
                             <option value="delete">Delete</option>
@@ -247,14 +196,14 @@ $orderby = $order_by." ".$order;
                         </select>
                         <input type="button" name="apply" value="Apply" id="apply_bulk_action" class="btn btn-light" title="Apply Action"  />
                     </td>
-                    <td colspan="4" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "items", $sql, $pageNum)?></td>
+                    <td colspan="3" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "items", $sql, $pageNum)?></td>
                 </tr>
                 <?php	
             }
             else{	
                 ?>
                 <tr>
-                    <td colspan="10"  class="no-record">No Result Found</td>
+                    <td colspan="9"  class="no-record">No Result Found</td>
                 </tr>
                 <?php
             }

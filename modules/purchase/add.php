@@ -140,7 +140,7 @@ else{
 												$groupItem='';
 												$singleItem='';
 												
-                                                $sql="select * from items where 1=1 AND type='0' AND status=1 order by title";
+                                                $sql="select * from items where type='0' AND status=1 order by title";
                                                 $rs=doquery($sql, $dblink);
                                                 if(numrows($rs)>0){
                                                     while($r=dofetch($rs)){
@@ -148,7 +148,7 @@ else{
                                                         <?php
 														
 															?>
-                                                        	<option value="<?php echo $r["id"]?>"<?php if($items[$sn-1]==$r["id"]) echo ' selected="selected"';?>><?php echo unslash($r["title"])?></option>
+                                                        	<option value="<?php echo $r["id"]?>"<?php if($items["id"]==$r["id"]) echo ' selected="selected"';?>><?php echo unslash($r["title"])?></option>
                                                         	<?php }?>
                                                         <?php
                                                     
