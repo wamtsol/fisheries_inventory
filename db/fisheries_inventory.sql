@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 19, 2022 at 08:21 AM
+-- Generation Time: Jan 20, 2022 at 11:10 AM
 -- Server version: 5.7.24
 -- PHP Version: 7.3.33
 
@@ -141,7 +141,7 @@ CREATE TABLE `config_variable` (
 
 INSERT INTO `config_variable` (`id`, `config_type_id`, `title`, `notes`, `type`, `default_values`, `key`, `value`, `sortorder`) VALUES
 (1, 1, 'Site URL', '', 'text', '', 'site_url', 'http://localhost', 2),
-(2, 1, 'Site Title', '', 'text', '', 'site_title', 'Tamseel Traders', 1),
+(2, 1, 'Site Title', '', 'text', '', 'site_title', 'Fisheries', 1),
 (3, 1, 'Admin Logo', '', 'file', '', 'admin_logo', 'admin_logo.png', 4),
 (11, 1, 'Thermal Printer Title', 'Enter the thermal printer installed on your pc. You can find it in your control panel settings', 'text', '', 'thermal_printer_title', 'POS-80(copy of 1)', 6),
 (10, 1, 'Currency Symbol', '', 'text', '', 'currency_symbol', 'Rs', 5),
@@ -314,8 +314,8 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`id`, `type`, `title`, `unit_price`, `quantity`, `low_stock_quantity`, `status`, `ts`) VALUES
-(1, 1, 'first item', '20099.00', 2, 2299, 1, '2022-01-18 11:18:25'),
-(2, 0, 'second item', '99.00', 71, 99, 1, '2022-01-18 11:35:38');
+(1, 0, 'first item', '20099.00', 4, 2299, 1, '2022-01-18 11:18:25'),
+(2, 0, 'second item', '99.00', 56, 99, 1, '2022-01-18 11:35:38');
 
 -- --------------------------------------------------------
 
@@ -503,7 +503,8 @@ CREATE TABLE `purchase` (
 --
 
 INSERT INTO `purchase` (`id`, `datetime_added`, `type`, `supplier_name`, `phone`, `address`, `supplier_id`, `total_items`, `total_price`, `discount`, `net_price`, `supplier_payment_id`, `bill_image`, `status`, `ts`) VALUES
-(1, '2022-01-18 16:43:00', 1, 'first supplier', '03103898208', 'addr', 1, 12, '240.00', '0.00', '240.00', NULL, NULL, 1, '2022-01-18 11:51:36');
+(1, '2022-01-18 00:00:00', 1, 'second supplier', '03461510119', 'addr', 2, 12, '240.00', '0.00', '240.00', NULL, NULL, 1, '2022-01-18 11:51:36'),
+(2, '2022-01-19 18:02:00', 1, 'first supplier', '03103898208', 'addr', 1, 1, '2.00', '0.00', '2.00', NULL, NULL, 1, '2022-01-19 13:02:33');
 
 -- --------------------------------------------------------
 
@@ -516,10 +517,7 @@ CREATE TABLE `purchase_items` (
   `purchase_id` int(11) NOT NULL,
   `item_id` int(11) NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
-  `hundred_pieces_kg` int(10) NOT NULL,
-  `unit` int(1) NOT NULL DEFAULT '0',
   `quantity` int(11) NOT NULL,
-  `total_kg` decimal(10,2) NOT NULL,
   `total_price` decimal(10,2) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -527,8 +525,9 @@ CREATE TABLE `purchase_items` (
 -- Dumping data for table `purchase_items`
 --
 
-INSERT INTO `purchase_items` (`id`, `purchase_id`, `item_id`, `unit_price`, `hundred_pieces_kg`, `unit`, `quantity`, `total_kg`, `total_price`) VALUES
-(1, 1, 2, '20.00', 2, 0, 12, '2.00', '240.00');
+INSERT INTO `purchase_items` (`id`, `purchase_id`, `item_id`, `unit_price`, `quantity`, `total_price`) VALUES
+(1, 1, 2, '20.00', 12, '240.00'),
+(2, 2, 1, '2.00', 1, '2.00');
 
 -- --------------------------------------------------------
 
@@ -613,8 +612,8 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `datetime_added`, `type`, `customer_name`, `phone`, `address`, `customer_id`, `total_items`, `total_price`, `discount`, `net_price`, `customer_payment_id`, `cash_receive`, `cash_return`, `town`, `bill_image`, `status`, `ts`) VALUES
-(1, '2022-01-18 16:55:00', 0, 'first customer ', '03103898208', 'addr', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1, '2022-01-18 11:55:52'),
-(2, '2022-01-18 16:55:00', 0, 'first customer ', '03103898208', 'addr', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1, '2022-01-18 12:07:45');
+(1, '2022-01-18 16:55:00', 0, 'second customer ', '03453607906', 'addr', 2, 1, '20099.00', '0.00', '20099.00', NULL, '0.00', '0.00', 1, NULL, 1, '2022-01-19 13:59:01'),
+(7, '2022-01-19 21:20:00', 0, 'first customer ', '03103898208', 'addr', 1, 15, '1485.00', '0.00', '1485.00', NULL, '0.00', '0.00', 0, NULL, 1, '2022-01-20 11:08:16');
 
 -- --------------------------------------------------------
 
@@ -627,9 +626,7 @@ CREATE TABLE `sales_items` (
   `sales_id` int(11) NOT NULL,
   `item_id` int(11) NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
-  `unit` int(1) NOT NULL DEFAULT '0',
   `quantity` int(11) NOT NULL,
-  `total_kg` decimal(10,2) NOT NULL,
   `total_price` decimal(10,2) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -637,9 +634,9 @@ CREATE TABLE `sales_items` (
 -- Dumping data for table `sales_items`
 --
 
-INSERT INTO `sales_items` (`id`, `sales_id`, `item_id`, `unit_price`, `unit`, `quantity`, `total_kg`, `total_price`) VALUES
-(1, 1, 1, '20099.00', 0, 1, '0.00', '20099.00'),
-(2, 2, 1, '20099.00', 0, 1, '0.00', '20099.00');
+INSERT INTO `sales_items` (`id`, `sales_id`, `item_id`, `unit_price`, `quantity`, `total_price`) VALUES
+(1, 1, 1, '20099.00', 1, '20099.00'),
+(7, 7, 2, '99.00', 15, '1485.00');
 
 -- --------------------------------------------------------
 
@@ -730,8 +727,8 @@ CREATE TABLE `supplier` (
 --
 
 INSERT INTO `supplier` (`id`, `supplier_name`, `phone`, `address`, `balance`, `status`, `ts`) VALUES
-(1, 'first supplier', '03103898208', 'addr', 1000, 1, '2022-01-18 11:41:43'),
-(2, 'second supplier', '03461510119', 'addr', 122, 1, '2022-01-18 11:42:01');
+(1, 'first supplier', '65465654', 'addr', 1000, 1, '2022-01-18 11:41:43'),
+(2, 'second supplier', '984844444', 'addr', 122, 1, '2022-01-18 11:42:01');
 
 -- --------------------------------------------------------
 
@@ -1086,13 +1083,13 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `purchase`
 --
 ALTER TABLE `purchase`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `purchase_items`
 --
 ALTER TABLE `purchase_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `salary`
@@ -1110,13 +1107,13 @@ ALTER TABLE `salary_payment`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `stock_movement`
