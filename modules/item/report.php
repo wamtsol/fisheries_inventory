@@ -85,6 +85,17 @@ $orderby = $order_by." ".$order;
                 <p>
                     <?php
                         echo "List of";
+                        if( !empty( $stock ) ){
+                            if( $stock == "0" ){
+                                echo " In Stock <br>";
+                            }
+                            if( $stock == "1" ){
+                                echo " Low Stock <br>";
+                            }
+                            if( $stock == "2" ){
+                                echo " Out Of Stock <br>";
+                            }
+                        }
                         if( !empty( $q ) ){
                             echo " Item: ".$q;
                         }
