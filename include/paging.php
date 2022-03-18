@@ -1,11 +1,8 @@
 <?php
-$path = $_SERVER['REQUEST_URI'];
-$file = basename($path, ".php");
-//echo $file;die;
 if(isset($_GET["rows"]))
-	$_SESSION[$file]["rows"]=$_GET["rows"];
-if(isset($_SESSION[$file]["rows"]))
-	$rows=$_SESSION[$file]["rows"];
+	$_SESSION["rows"]=$_GET["rows"];
+if(isset($_SESSION["rows"]))
+	$rows=$_SESSION["rows"];
 else
 	$rows=25;
 if(isset($_GET['page'])){

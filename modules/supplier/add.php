@@ -7,7 +7,7 @@ else{
 	$supplier_name="";
 	$phone="";
 	$address="";
-    $balance="";
+	$balance="";
 }
 ?>
 <div class="page-header">
@@ -59,7 +59,7 @@ else{
                 <label class="form-label" for="balance">Balance</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" value="<?php echo $balance; ?>" name="balance" id="balance" class="form-control" title="Enter balance">
+                <input type="text" value="<?php echo $balance; ?>" name="balance" id="balance" class="form-control" title="Enter Balance">
             </div>
         </div>
   	</div>

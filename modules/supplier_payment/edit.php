@@ -18,18 +18,18 @@ if(!defined("APP_START")) die("No Direct Access");
                 <label class="form-label" for="supplier_id">Supplier Name <span class="manadatory">*</span></label>
             </div>
             <div class="col-sm-10">
-                <select name="supplier_id" title="Choose Option">
-                    <option value="0">Select Supplier</option>
+                <select name="supplier_id" id="supplier_id" class="margin-btm-5 select_supplier">
+                	<option value="">Select Supplier</option>
                     <?php
-                    $res=doquery("select * from supplier where status=1 order by id", $dblink);
-                    if(numrows($res)>0){
-                        while($rec=dofetch($res)){
-                        ?>
-                        <option value="<?php echo $rec["id"]?>"<?php echo($supplier_id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["supplier_name"]); ?></option>
-                     <?php			
-                        }			
-                    }
-                    ?>
+                    $rs = doquery( "select * from supplier where status=1 order by supplier_name", $dblink );
+					if( numrows( $rs ) > 0 ) {
+						while( $r = dofetch( $rs ) ) {
+							?>
+							<option value="<?php echo $r[ "id" ]?>" data-supplier_name="<?php echo htmlspecialchars(unslash($r[ "supplier_name" ]))?>" data-phone="<?php echo htmlspecialchars(unslash($r[ "phone" ]))?>" data-address="<?php echo htmlspecialchars(unslash($r[ "address" ]))?>"><?php echo unslash($r[ "supplier_name" ])?> ( <?php echo unslash($r[ "id" ])?> )</option>
+							<?php
+						}
+					}
+					?>
                 </select>
             </div>
         </div>
@@ -37,10 +37,10 @@ if(!defined("APP_START")) die("No Direct Access");
   	<div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">
-                <label class="form-label" for="datetime_added">Datetime</label>
+                <label class="form-label" for="datetime">Datetime</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" title="Enter datetime" value="<?php echo $datetime_added; ?>" name="datetime_added" id="datetime_added" class="form-control date-timepicker" >
+                <input type="text" title="Enter datetime" value="<?php echo $datetime; ?>" name="datetime" id="datetime" class="form-control date-timepicker" >
             </div>
         </div>
   	</div>
@@ -60,10 +60,10 @@ if(!defined("APP_START")) die("No Direct Access");
                 <label class="form-label" for="account_id">Paid By </label>
             </div>
             <div class="col-sm-10">
-                <select name="account_id" id="account_id" title="Choose Option" class="select_search">
+                <select name="account_id" title="Choose Option">
                     <option value="0">Select Account</option>
                     <?php
-                    $res=doquery("select * from account where status=1 order by id", $dblink);
+                    $res=doquery("select * from account where status=1 order by title", $dblink);
                     if(numrows($res)>0){
                         while($rec=dofetch($res)){
                         ?>
@@ -77,26 +77,15 @@ if(!defined("APP_START")) die("No Direct Access");
         </div>
   	</div>
     <div class="form-group">
-    	<div class="row">
-            <div class="col-sm-2 control-label">
-                <label class="form-label" for="details">Details</label>
+        <div class="row">
+        	<div class="col-sm-2 control-label">
+            	<label class="form-label" for="details">Details </label>
             </div>
             <div class="col-sm-10">
-                <textarea title="Enter details" name="details" id="details" class="form-control"><?php echo $details?></textarea>
+                 <textarea title="Enter Details" value="" name="details" id="details" class="form-control" /><?php echo $details; ?></textarea>
             </div>
         </div>
-  	</div>
-    <div class="form-group">
-    	<div class="row">
-            <div class="col-sm-2 control-label">
-                <label class="form-label" for="payment_image">Payment Image</label>
-            </div>
-            <div class="col-sm-10">
-                <input type="file" title="Select Image" name="payment_image" id="payment_image" class="form-control">
-                <?php if(!empty($payment_image)) { ?><a href="<?php echo $file_upload_root?>payment_image/<?php echo $payment_image; ?>" target="_blank"><img src="<?php echo $file_upload_root?>payment_image/<?php echo $payment_image; ?>"  alt="image" title="<?php echo $id;?>" style="width: 50px;margin-right: 10px;" /></a><input type="checkbox" name="delete_image" id="delete_image" class="delete-image" value="1" />&nbsp;<label for="delete_image">Delete This Image</label><?php } ?>
-            </div>
-        </div>
-  	</div>
+    </div>
   	<div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">

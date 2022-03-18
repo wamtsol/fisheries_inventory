@@ -23,7 +23,7 @@ if(!empty($q)){
   	</ol>
   	<div class="right">
     	<div class="btn-group" role="group" aria-label="..."> 
-        	<a href="supplier_manage.php?tab=add" class="btn btn-light editproject">Add New Record</a> 
+        	<a href="supplier_manage.php?tab=add" class="btn btn-light editproject">Add New Supplier</a> 
             <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a>
         </div>
   	</div>
@@ -32,10 +32,11 @@ if(!empty($q)){
 	<li class="col-xs-12 col-lg-12 col-sm-12">
         <div>
         	<form class="form-horizontal" action="" method="get">
-                <div class="col-sm-10 col-xs-8">
+                <div class="col-sm-8">
                   <input type="text" title="Enter String" value="<?php echo $q;?>" name="q" id="search" class="form-control" >  
                 </div>
-                <div class="col-sm-1 col-xs-2">
+                <div class="col-sm-4 text-left">
+                	<input type="button" class="btn btn-danger btn-l reset_search" value="Reset" alt="Reset Record" title="Reset Record" />
                     <input type="submit" class="btn btn-default btn-l" value="Search" alt="Search Record" title="Search Record" />
                 </div>
           	</form>
@@ -50,12 +51,12 @@ if(!empty($q)){
                 <th class="text-center" width="5%"><div class="checkbox checkbox-primary">
                     <input type="checkbox" id="select_all" value="0" title="Select All Records">
                     <label for="select_all"></label></div></th>
-                <th>Supplier Name</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Balance</th>
-                <th class="text-center">Status</th>
-                <th class="text-center">Actions</th>
+                <th width="15%">Supplier Name</th>
+                <th width="10%">Phone</th>
+                <th width="25%">Address</th>
+                <th class="text-right">Balance</th>
+                <th class="text-center" width="5%">Status</th>
+                <th class="text-center" width="10%">Actions</th>
             </tr>
     	</thead>
     	<tbody>
@@ -75,7 +76,11 @@ if(!empty($q)){
                         <td><?php echo unslash($r["supplier_name"]); ?></td>
                         <td><?php echo unslash($r["phone"]); ?></td>
                         <td><?php echo unslash($r["address"]); ?></td>
-                        <td><?php echo curr_format(get_supplier_balance($r['id'], ""));?></td>
+                        <td class="text-right">
+                        	<?php
+                            echo curr_format( get_supplier_balance( $r[ "id" ] ) );
+							?>
+                        </td>
                         <td class="text-center"><a href="supplier_manage.php?id=<?php echo $r['id'];?>&tab=status&s=<?php echo ($r["status"]==0)?1:0;?>">
                             <?php
                             if($r["status"]==0){
@@ -91,7 +96,7 @@ if(!empty($q)){
                             ?>
                         </a></td>
                         <td class="text-center">
-                        	<a href="supplier_manage.php?tab=report_debit_credit&id=<?php echo $r['id'];?>" class="download-icon"><i class="fa fa-download" aria-hidden="true"></i></a>&nbsp;&nbsp;
+                        	<a href="supplier_manage.php?tab=report&id=<?php echo $r['id'];?>" class="download-icon"><i class="fa fa-download" aria-hidden="true"></i></a>&nbsp;&nbsp;
                             <a href="supplier_manage.php?tab=edit&id=<?php echo $r['id'];?>"><img title="Edit Record" alt="Edit" src="images/edit.png"></a>&nbsp;&nbsp;
                             <a onclick="return confirm('Are you sure you want to delete')" href="supplier_manage.php?id=<?php echo $r['id'];?>&amp;tab=delete"><img title="Delete Record" alt="Delete" src="images/delete.png"></a>
                         </td>

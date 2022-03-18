@@ -6,7 +6,7 @@ if(isset($_POST["transaction_edit"])){
 	if($account_id == "" || $reference_id == "")
 		$err="Fields with (*) are Mandatory.<br />";
 	if($err==""){
-		$sql="Update transaction set `account_id`='".slash($account_id)."',`reference_id`='".slash($reference_id)."',`datetime_added`='".slash(datetime_dbconvert($datetime_added))."',`amount`='".slash($amount)."',`details`='".slash($details)."'"." where id='".$id."'";
+		$sql="Update transaction set `project_id`='".slash($project_id)."',`account_id`='".slash($account_id)."',`reference_id`='".slash($reference_id)."',`datetime_added`='".slash(datetime_dbconvert($datetime_added))."',`amount`='".slash($amount)."',`details`='".slash($details)."',`cheque_number`='".slash($cheque_number)."'"." where id='".$id."'";
 		doquery($sql,$dblink);
 		unset($_SESSION["transaction_manage"]["edit"]);
 		header('Location: transaction_manage.php?tab=list&msg='.url_encode("Sucessfully Updated"));

@@ -32,7 +32,7 @@ table {
 <table width="100%" cellspacing="0" cellpadding="0">
     <tr class="head">
         <th colspan="9">
-            <h1><?php echo get_config( 'site_title' )?></h1>
+            <?php echo get_config( 'fees_chalan_header' )?>
             <h2>General Journal</h2>
         </th>
     </tr>
@@ -45,17 +45,30 @@ table {
         <th align="right">Balance</th>
     </tr>
     <tbody>
-        <tr>
+        <!-- <tr>
             <td colspan="2"></td>
             <td><?php echo $order == 'desc'?'Closing':'Opening'?> Balance</td>
             <td></td>
             <td></td>
             <td align="right"><?php echo curr_format( $balance )?></td>
-        </tr>
+        </tr> -->
 		<?php
+        $total_debit = 0;
+        $total_credit = 0;
 		if( numrows( $rs ) > 0 ) {
-		$sn = 1;
-        	while($r=dofetch($rs)){             
+        $sn = 1;
+            ?>
+            <tr>
+                <td colspan="2"></td>
+                <td><?php echo $order == 'desc'?'Closing':'Opening'?> Balance</td>
+                <td></td>
+                <td></td>
+                <td align="right"><?php echo curr_format( $balance )?></td>
+            </tr>
+            <?php
+        	while($r=dofetch($rs)){    
+                $total_debit += $r["debit"];
+                $total_credit += $r["credit"];   
 				?>
 				<tr>
 					<td class="text-center"><?php echo $sn++;?></td>
@@ -66,7 +79,22 @@ table {
 					<td align="right"><?php if($order == 'asc'){$balance += ($r["debit"]-$r["credit"])*($order == 'desc'?'-1':1);} echo curr_format( $balance ); if($order == 'desc'){$balance += ($r["debit"]-$r["credit"])*($order == 'desc'?'-1':1);} ?></td>
 				</tr>
 				<?php
-			}
+            }
+            ?>
+            <tr>
+                <td colspan="2"></td>
+                <td><?php echo $order != 'desc'?'Closing':'Opening'?> Balance</td>
+                <td></td>
+                <td></td>
+                <td align="right"><?php echo curr_format( $balance )?></td>
+            </tr>
+            <tr>
+                <th colspan="3" align="right">Total:</th>
+                <th align="right"><?php echo curr_format($total_debit);?></th>
+                <th align="right"><?php echo curr_format($total_credit);?></th>
+                <th></th>
+            </tr>
+            <?php
 		}
         ?>
     </tbody>

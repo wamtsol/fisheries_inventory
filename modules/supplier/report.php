@@ -1,65 +1,96 @@
 <?php
 if(!defined("APP_START")) die("No Direct Access");
-$q="";
 $extra='';
 $is_search=false;
-if(isset($_GET["start_date"])){
-	$start_date=slash($_GET["start_date"]);
-	$_SESSION["supplier_manage"]["report"][ "start_date" ]=$start_date;
+if(isset($_GET["id"])){
+	$id=slash($_GET["id"]);
 }
-if(isset($_SESSION["supplier_manage"]["report"][ "start_date" ]))
-	$start_date=$_SESSION["supplier_manage"]["report"][ "start_date" ];
+else{
+	$id= '';
+}
+if(isset($_GET["date_from"])){
+	$date_from=slash($_GET["date_from"]);
+	$_SESSION["supplier"]["report"]["date_from"]=$date_from;
+}
+if(isset($_SESSION["supplier"]["report"]["date_from"]))
+	$date_from=$_SESSION["supplier"]["report"]["date_from"];
 else
-	$start_date=date("01/m/Y");
-if(!empty($start_date)){
-	$extra.=" and datetime_added>='".date('Y-m-d',strtotime(date_dbconvert($start_date)))." 00:00:00'";
+	$date_from=date( "01/m/Y h:i A" );
 	$is_search=true;
+if(isset($_GET["date_to"])){
+	$date_to=slash($_GET["date_to"]);
+	$_SESSION["supplier"]["report"]["date_to"]=$date_to;
 }
-if(isset($_GET["end_date"])){
-	$end_date=slash($_GET["end_date"]);
-	$_SESSION["supplier_manage"]["report"][ "end_date" ]=$end_date;
-}
-if(isset($_SESSION["supplier_manage"]["report"][ "end_date" ]))
-	$end_date=$_SESSION["supplier_manage"]["report"][ "end_date" ];
+if(isset($_SESSION["supplier"]["report"]["date_to"]))
+	$date_to=$_SESSION["supplier"]["report"]["date_to"];
 else
-	$end_date=date("d/m/Y");
-if(!empty($end_date)){
-	$extra.=" and datetime_added<'".date('Y-m-d',strtotime(date_dbconvert($end_date)))." 23:59:59'";
+	$date_to=date( "d/m/Y h:i A" );
 	$is_search=true;
+if($id){
+	$extra.=" and id='".$id."'";
+	$rs=doquery("select * from supplier where 1 $extra",$dblink);
+	if(numrows($rs)>0){
+		$supplier=dofetch($rs);
+	}
+	else {
+		return;
+	}
 }
 ?>
 <div class="page-header">
-	<h1 class="title"><?php echo $supplier["supplier_name"]?></h1>
+	<h1 class="title">
+		<?php 
+			if(!empty( $id )){ 
+				echo $supplier[ "supplier_name" ];
+			}
+			else{
+				echo "Supplier's Ledger";
+			}
+		?>
+    </h1>
   	<ol class="breadcrumb">
-    	<li class="active"><?php echo $supplier["phone"]?></li>
+    	<li class="active">Manage Suppliers</li>
   	</ol>
   	<div class="right">
-    	<div class="btn-group" role="group" aria-label="..."> 
-        	<a href="supplier_manage.php?tab=list" class="btn btn-light editproject">Back to List</a> 
-            <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a>
+        <div class="col-sm-12">
+            <div class="btn-group" role="group" aria-label="..."> 
+                <a href="supplier_manage.php?tab=list" class="btn btn-light editproject">Back to List</a> 
+                <a class="btn print-btn" href="supplier_manage.php?tab=print&id=<?php echo $id;?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+                <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a>
+            </div>
         </div>
   	</div>
 </div>
 <ul class="topstats clearfix search_filter"<?php if($is_search) echo ' style="display: block"';?>>
 	<li class="col-xs-12 col-lg-12 col-sm-12">
         <div>
-        	<form class="form-horizontal" action="" method="get">
-                <input type="hidden" name="tab" value="report" />
-                <input type="hidden" name="id" value="<?php echo $supplier["id"]?>" />
-                <span class="col-sm-2 text-to">Date From</span>
+        	<form method="get" action="supplier_manage.php?tab=report">
+            	<input type="hidden" name="tab" value="report" />
+                <span class="col-sm-1 text-to">From</span>
                 <div class="col-sm-3">
-                    <input type="text" title="Enter Date From" name="start_date" id="start_date" placeholder="" class="form-control date-picker"  value="<?php echo $start_date?>" >
+                    <input type="text" title="Enter Date From" name="date_from" id="date_from" placeholder="" class="form-control date-timepicker"  value="<?php echo $date_from?>" >
                 </div>
-                <span class="col-sm-2 text-to">Date To</span>
+                <span class="col-sm-1 text-to">To</span>
                 <div class="col-sm-3">
-                    <input type="text" title="Enter Date To" name="end_date" id="end_date" placeholder="" class="form-control date-picker"  value="<?php echo $end_date?>" >
+                    <input type="text" title="Enter Date To" name="date_to" id="date_to" placeholder="" class="form-control date-timepicker" value="<?php echo $date_to?>" >
                 </div>
-                
-                <div class="col-sm-2 text-left">
-                    <input type="button" class="btn btn-danger btn-l reset_search" value="Reset" alt="Reset Record" title="Reset Record" />
-                    <input type="submit" class="btn btn-default btn-l" value="Search" alt="Search Record" title="Search Record" />
+                <div class="col-sm-4">
+                	<select name="id" id="id">
+                        <option value="">Select Supplier</option>
+                        <?php
+                            $res=doquery("select * from supplier order by supplier_name ",$dblink);
+                            if(numrows($res)>=0){
+                                while($rec=dofetch($res)){
+                                ?>
+                                <option value="<?php echo $rec["id"]?>" <?php echo($id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["supplier_name"])?></option>
+                                <?php
+                                }
+                            }	
+                        ?>
+                    </select>
                 </div>
-          	</form>
+                <input type="submit" class="btn btn-default btn-l" value="Search" alt="Search Record" title="Search Record" />
+            </form>
         </div>
   	</li>
 </ul>
@@ -69,54 +100,66 @@ if(!empty($end_date)){
             <tr>
                 <th width="5%" class="text-center">S.no</th>
                 <th>Date</th>
-                <th>Transaction</th>
-                <th>Details</th>
+                <th>Transaction</th>                
                 <th class="text-right">Amount</th>
                 <th class="text-right">Balance</th>
             </tr>
     	</thead>
     	<tbody>
 			<?php 
-            $sql="select id, datetime_added, 'Purchase' as type, '' as details, net_price as amount from purchase where supplier_id='".$supplier[ "id" ]."' $extra union select id, datetime_added, 'Payment' as type, details, -amount from supplier_payment where supplier_id='".$supplier["id"]."' ".str_replace( "datetime_added", "datetime_added", $extra)." order by datetime_added";
-			$balance = 0;
-			$rs = dofetch(doquery( "select sum(amount) as user_balance from (select datetime_added, net_price as amount from purchase where supplier_id='".$supplier[ "id" ]."' and datetime_added<'".date('Y-m-d',strtotime(date_dbconvert($start_date)))." 00:00:00' union select datetime_added, -amount from supplier_payment where supplier_id='".$supplier["id"]."' and datetime_added<'".date('Y-m-d',strtotime(date_dbconvert($start_date)))." 00:00:00') as transaction", $dblink ));
-			$balance = $rs[ "user_balance" ];
-            $rs1=show_page($rows, $pageNum, $sql);
-            ?>
-			<tr>
-                <td class="text-right" colspan="4"><strong>Opening Balance</strong></td>
-                <td class="text-right"><?php echo curr_format($balance); ?></td>
-            </tr>
-			<?php
-			if(numrows($rs1)>0){
-                $sn=1;
-                while($r=dofetch($rs1)){             
-					$balance+=$r["amount"];
-                    ?>
-                    <tr>
-                        <td class="text-center"><?php echo $sn;?></td>
-                        <td><?php echo datetime_convert($r["datetime_added"]); ?></td>
-                        <td><?php echo unslash($r["type"]); ?></td>
-                        <td><?php echo unslash($r["details"]); ?></td>
-                        <td class="text-right"><?php echo curr_format($r["amount"]); ?></td>
+			if( !empty( $id ) ){
+				$balance = get_supplier_balance( $supplier[ "id" ], datetime_dbconvert( $date_to ) );
+				$sn=1;
+				?>
+				<tr>
+                    <td class="text-center"><?php echo $sn++;?></td>
+                    <td><?php echo $date_to; ?></td>
+                    <td>Closing Balance</td>
+                    <td class="text-right">--</td>
+                    <td class="text-right"><?php echo curr_format($balance); ?></td>
+                </tr>
+				<?php
+				$sql="select concat( 'Purchase #', id) as transaction, date, net_price as amount from purchase where supplier_id = '".$supplier[ "id" ]."' and date >='".datetime_dbconvert( $date_from )."' and date <='".datetime_dbconvert( $date_to )."' union select concat( 'Purchase Return #', id) as transaction, date, -net_price as amount from purchase_return where supplier_id = '".$supplier["id"]."' and date >='".datetime_dbconvert( $date_from )."' and date <='".datetime_dbconvert( $date_to )."' union select 'Payment', datetime as date, -amount from supplier_payment where supplier_id = '".$supplier[ "id" ]."' and datetime >='".datetime_dbconvert( $date_from )."' and datetime <='".datetime_dbconvert( $date_to )."' order by date desc";
+				$rs=doquery($sql,$dblink);
+				if(numrows($rs)>0){
+					while($r=dofetch($rs)){
+						?>
+						<tr>
+							<td class="text-center"><?php echo $sn;?></td>
+							<td><?php echo datetime_convert($r["date"]); ?></td>
+							<td><?php echo unslash($r["transaction"]); ?></td>
+							<td class="text-right"><?php echo curr_format($r["amount"]); ?></td>
+							<td class="text-right"><?php echo curr_format($balance); ?></td>
+						</tr>
+						<?php 
+						$sn++;
+						$balance = $balance - $r["amount"];
+					}
+					?>
+					<tr>
+                        <td class="text-center"><?php echo $sn++;?></td>
+                        <td><?php echo $date_from; ?></td>
+                        <td>Opening Balance</td>
+                        <td class="text-right">--</td>
                         <td class="text-right"><?php echo curr_format($balance); ?></td>
                     </tr>
-                    <?php 
-                    $sn++;
-                }
-                ?>
-                <tr>
-                    <td colspan="6" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "supplier", $sql, $pageNum)?></td>
-                </tr>
-                <?php	
-            }
-            else{	
-                ?>
-                <tr>
-                    <td colspan="6"  class="no-record">No Result Found</td>
-                </tr>
-                <?php
-            }
+					<?php
+				}
+				else{	
+					?>
+					<tr>
+						<td colspan="5"  class="no-record">No Result Found</td>
+					</tr>
+					<?php
+				}
+			}
+			else {
+				?>
+				<tr>
+					<td colspan="5"  class="no-record">Select Supplier from above dropdown</td>
+				</tr>
+				<?php
+			}
             ?>
     	</tbody>
   	</table>

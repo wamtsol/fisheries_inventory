@@ -6,12 +6,19 @@ include("include/paging.php");
 define("APP_START", 1);
 $filename = 'transaction_manage.php';
 include("include/admin_type_access.php");
-$tab_array=array("list", "add", "edit", "status", "delete", "bulk_action", "report");
+$tab_array=array("list", "add", "edit", "status", "delete", "bulk_action", "report", "csv_report");
 if(isset($_REQUEST["tab"]) && in_array($_REQUEST["tab"], $tab_array)){
 	$tab=$_REQUEST["tab"];
 }
 else{
 	$tab="list";
+}
+if(isset($_GET["project_id"])){
+	$project_id=slash($_GET["project_id"]);
+	$_SESSION["transaction"]["list"]["project_id"]=$project_id;
+}
+else{
+	$project_id="";
 }
 $extra='';
 $is_search=false;
@@ -41,6 +48,14 @@ if( !empty($date_to) ){
 	$extra=" and datetime_added<'".date("Y/m/d", strtotime(date_dbconvert($date_to))+3600*24)."'";
 	$is_search=true;
 }
+if(isset($_SESSION["transaction"]["list"]["project_id"]))
+	$project_id=$_SESSION["transaction"]["list"]["project_id"];
+else
+	$project_id="";
+if($project_id!=""){
+	$extra.=" and a.project_id='".$project_id."'";
+	$is_search=true;
+}
 if(isset($_GET["reference_id"])){
 	$reference_id=slash($_GET["reference_id"]);
 	$_SESSION["transaction"]["list"]["reference_id"]=$reference_id;
@@ -51,7 +66,8 @@ if(isset($_SESSION["transaction"]["list"]["reference_id"]))
 else
 	$reference_id="";
 if($reference_id!=""){
-	$acount_extra[]="reference_id='".$reference_id."'";
+	$extra.=" and reference_id='".$reference_id."'";
+	//$acount_extra[]="reference_id='".$reference_id."'";
 	$is_search=true;
 }
 if(isset($_GET["account_id"])){
@@ -63,13 +79,19 @@ if(isset($_SESSION["transaction"]["list"]["account_id"]))
 else
 	$account_id="";
 if($account_id!=""){
-	$acount_extra[]="account_id='".$account_id."'";
+	$extra.=" and account_id='".$account_id."'";
+	//$acount_extra[]="account_id='".$account_id."'";
 	$is_search=true;
 }
 if( count($acount_extra) > 0 ){
 	$extra.=" and (".implode(" or ", $acount_extra ).")";
 }
-$sql="select * from transaction where 1 $extra order by datetime_added desc";
+$adminId = '';
+if($_SESSION["logged_in_admin"]["admin_type_id"]!=1){
+	$adminId = "and b.admin_id = '".$_SESSION["logged_in_admin"]["id"]."'";
+}
+$sql="select a.* from transaction a left join admin_2_project b on a.project_id = b.project_id where 1 $extra $adminId order by datetime_added desc";
+
 switch($tab){
 	case 'add':
 		include("modules/transaction/add_do.php");
@@ -88,6 +110,9 @@ switch($tab){
 	break;
 	case 'report':
 		include("modules/transaction/print_do.php");
+	break;
+	case 'csv_report':
+		include("modules/transaction/report_csv.php");
 	break;
 }
 ?>

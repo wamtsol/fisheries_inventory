@@ -48,7 +48,7 @@ if(!defined("APP_START")) die("No Direct Access");
                 <label class="form-label" for="balance">Balance</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" value="<?php echo $balance; ?>" name="balance" id="balance" class="form-control" title="Enter balance">
+                <input type="text" value="<?php echo $balance; ?>" name="balance" id="balance" class="form-control" title="Enter Balance">
             </div>
         </div>
   	</div>

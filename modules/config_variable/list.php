@@ -23,7 +23,7 @@ if(!empty($q)){
   	</ol>
   	<div class="right">
     	<div class="btn-group" role="group" aria-label="..."> 
-        	<a href="config_variable_manage.php?tab=add" class="btn btn-light editproject">Add New Record</a> <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a> <a class="btn btn-light" href="#"><i class="fa fa-line-chart"></i></a> 
+        	<a href="config_variable_manage.php?tab=add" class="btn btn-light editproject">Add New Record</a> <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a> 
         </div>
   	</div>
 </div>
@@ -31,10 +31,10 @@ if(!empty($q)){
 	<li class="col-xs-12 col-lg-12 col-sm-12">
         <div>
         	<form class="form-horizontal" action="" method="get">
-                <div class="col-sm-10 col-xs-8">
+                <div class="col-sm-10">
                   <input type="text" title="Enter String" value="<?php echo $q;?>" name="q" id="search" class="form-control" >  
                 </div>
-                <div class="col-sm-1 col-xs-2">
+                <div class="col-sm-1">
                     <input type="submit" class="btn btn-default btn-l" value="Search" alt="Search Record" title="Search Record" />
                 </div>
           	</form>

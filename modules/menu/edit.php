@@ -89,7 +89,7 @@ if(!defined("APP_START")) die("No Direct Access");
                     <?php
                     foreach(get_fontawesome_icons() as $ficon){
                         ?>
-                        <option value="<?php echo $ficon[0]?>"<?php if($small_icon==$ficon[0]) echo ' selected="selected"';?>><?php echo "&#x".$ficon[1]." - ".$ficon[0]?></option>
+                        <option value="<?php echo $ficon[0]?>"<?php if($small_icon==$ficon[0]) echo ' selected="selected"';?>><?php echo $ficon[0]." - &#x".$ficon[1]?></option>
                         <?php
                     }
                     ?>

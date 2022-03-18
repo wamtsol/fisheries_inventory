@@ -17,13 +17,13 @@ if(!empty($q)){
 }
 ?>
 <div class="page-header">
-	<h1 class="title">Manage Admin Type</h1>
+	<h1 class="title">Manage User Type</h1>
   	<ol class="breadcrumb">
-    	<li class="active">All Admin Type</li>
+    	<li class="active">All User Type</li>
   	</ol>
   	<div class="right">
     	<div class="btn-group" role="group" aria-label="..."> 
-        	<a href="admin_type_manage.php?tab=add" class="btn btn-light editproject">Add New Record</a> <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a> <a class="btn btn-light" href="#"><i class="fa fa-line-chart"></i></a> 
+        	<a href="admin_type_manage.php?tab=add" class="btn btn-light editproject">Add New Record</a> <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a> 
         </div>
   	</div>
 </div>
@@ -45,8 +45,8 @@ if(!empty($q)){
 	<table class="table table-hover list">
     	<thead>
             <tr>
-                <th width="5%">S.No</th>
-                <th width="5%" class="center">
+                <th width="5%" class="text-center">S.No</th>
+                <th width="5%" class="text-center">
                     <div class="checkbox checkbox-primary">
                     <input type="checkbox" id="select_all" value="0" title="Select All Records">
                     <label for="select_all"></label></div>
@@ -56,8 +56,8 @@ if(!empty($q)){
                 <th width="10%">Can Edit</th>
                 <th width="10%">Can Delete</th>
                 <th width="10%">Can Read</th>
-                <th width="10%" class="center">Status</th>
-                <th width="10%" class="center">Actions</th>
+                <th width="10%" class="text-center">Status</th>
+                <th width="10%" class="text-center">Actions</th>
             </tr>
     	</thead>
     	<tbody>
@@ -69,8 +69,8 @@ if(!empty($q)){
 				while($r=dofetch($rs)){             
 					?>
 					<tr>
-						<td><?php echo $sn;?></td>
-						<td class="center">
+						<td class="text-center"><?php echo $sn;?></td>
+						<td class="text-center">
 							<div class="checkbox margin-t-0 checkbox-primary">
                             <input type="checkbox" name="id[]" id="<?php echo "rec_".$sn?>"  value="<?php echo $r["id"]?>" title="Select Record" />
                             <label for="<?php echo "rec_".$sn?>"></label></div>
@@ -94,7 +94,7 @@ if(!empty($q)){
                             }
                             ?>
                         </a></td>
-                        <td>
+                        <td class="text-center">
                             <a href="admin_type_manage.php?tab=edit&id=<?php echo $r['id'];?>"><img title="Edit Record" alt="Edit" src="images/edit.png"></a>&nbsp;&nbsp;
                             <a onclick="return confirm('Are you sure you want to delete')" href="admin_type_manage.php?id=<?php echo $r['id'];?>&amp;tab=delete"><img title="Delete Record" alt="Delete" src="images/delete.png"></a>
                         </td>

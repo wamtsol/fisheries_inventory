@@ -15,33 +15,33 @@ if(isset($_GET["action"]) && $_GET["action"]!=""){
 		if($bulk_action=="delete"){
 			$i=0;
 			while($i<count($id)){
-				doquery("delete from expense_category where id='".$id[$i]."'",$dblink);
+				doquery("delete from account where id='".$id[$i]."'",$dblink);
 				$i++;
 			}
-			header("Location: expense_category_manage.php?tab=list&msg=".url_encode("Records Deleted."));
+			header("Location: account_manage.php?tab=list&msg=".url_encode("Records Deleted."));
 			die;
 		}
 		if($bulk_action=="statuson"){
 			$i=0;
 			while($i<count($id)){
-				doquery("update expense_category set status=1 where id='".$id[$i]."'",$dblink);
+				doquery("update account set status=1 where id='".$id[$i]."'",$dblink);
 				$i++;
 			}
-			header("Location: expense_category_manage.php?tab=list&msg=".url_encode("Records Status On."));
+			header("Location: account_manage.php?tab=list&msg=".url_encode("Records Status On."));
 			die;
 		}
 		if($bulk_action=="statusof"){
 			$i=0;
 			while($i<count($id)){
-				doquery("update expense_category set status=0 where id='".$id[$i]."'",$dblink);
+				doquery("update account set status=0 where id='".$id[$i]."'",$dblink);
 				$i++;
 			}
-			header("Location: expense_category_manage.php?tab=list&msg=".url_encode("Records Status Off."));
+			header("Location: account_manage.php?tab=list&msg=".url_encode("Records Status Off."));
 			die;
 		}
 	}
 	else{
-		header("Location: expense_category_manage.php?tab=list&err=".url_encode($err));
+		header("Location: account_manage.php?tab=list&err=".url_encode($err));
 		die;					
 	}
 }

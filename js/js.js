@@ -12,8 +12,7 @@ function getToday(){
 	var montharray=new Array("January","February","March","April","May","June","July","August","September","October","November","December");
 	return(montharray[month]+" "+daym+", "+year);
 }
-function updateClock ( )
-{
+function updateClock ( ){
   var currentTime = new Date ( );
 
   var currentHours = currentTime.getHours ( );
@@ -112,13 +111,23 @@ $(document).ready(function(){
 		});
 	}
 	$(".dropdown.link").click(function(){
-		$(".dropdown-menu").toggle();
+		$(".dropdown-menu.dropdown-menu-right").toggle();
 	});
 	$("#topstats.btn").click(function(){
 		$(".topstats.search_filter").slideToggle();
 	});
 	$(".sidebar-open-button").click(function(){
-		$(".sidebar").toggle()
+		$(".sidebar").toggle();
+		$(".sidebar").toggleClass("active");
+		if($(window).width()>768){
+			if($(".sidebar").hasClass('active')){
+				$(".content").css("margin-left","250px");
+			}
+			else{
+				$(".content").css("margin-left","0");
+			}
+		}
+		/*$(".sidebar").toggle()
 		if($(window).width()>768){
 			if($(".sidebar").hasClass('closed')){
 				$(".sidebar").removeClass('closed')
@@ -128,7 +137,7 @@ $(document).ready(function(){
 				$(".sidebar").addClass('closed')
 				$(".content").css("margin-left","0px");
 			}
-		}
+		}*/
 	});
 	$('.nav > li > a').click(function(){
 		if ($(this).attr('class') != 'active'){
@@ -142,191 +151,135 @@ $(document).ready(function(){
 		  	$(this).removeClass('active');
 		}
 	});
+	$("select.select_supplier").chosen({width: "100%"});
 	
 	if($(".item_select").length>0){
-		$clone_container = $(".sale_item");
-		if( $clone_container.length == 0 ){
-			$clone_container = $(".purchase_item");
-		}
+		var $type = $(".item_select").first().data( "type" );
+		$clone_container = $("."+$type);
 		$(".item_select").change(function(){
-			$val=$(this).find('option:selected').val();
-			var $container=$(this).parents(".sale_item");
-			if( $container.length > 0 ) {
-				//$container.find(".unit_price").val(0);
-				if (($('#transaction_id').length > 0)){
-					$transId=$('#transaction_id').val();
-				}
-				else
-					$transId=0;
-				if($val>0){
-					$.get("sales_manage.php", {"tab":"get_unit_price","id":$val ,'transcationid':$transId}, function($unit_price){
-						//if(Number($container.find(".unit_price").val()) <= 0){
-							$container.find(".unit_price").val($unit_price);
-						//}
-						update_total($container);
-					});
-					$.get("sales_manage.php", {"tab":"get_quantity","id":$val ,"transcationid":$transId }, function($quantity){
-						$container.find(".qty").html($quantity);
-						update_total($container);
-						$(".quantity").change(function(){
-							$tot_itm = parseInt($container.find(".quantity").val());
-							if($quantity < $tot_itm){
-								console.log($quantity);
-								console.log($tot_itm);
-								$container.addClass('bg-danger');
-							}
-							else{
-								$container.removeClass('bg-danger');
-							}
-						})
-						
-						if($quantity==0){
-							$container.addClass('bg-danger');
-						}
-						else{
-							$container.removeClass('bg-danger');
-						}
-					});
-					$.get("stock_movement_manage.php", {"tab":"get_unit_price","id":$val ,'transcationid':$transId}, function($unit_price){
-						//if(Number($container.find(".unit_price").val()) <= 0){
-							$container.find(".unit_price1").val($unit_price);
-						//}
-						update_total($container);
-					});
-					// $.get("stock_movement_manage.php", {"tab":"get_quantity","id":$val ,"transcationid":$transId }, function($quantity){
-					// 	$container.find(".qty").html($quantity);
-					// 	update_total($container);
-					// });
-				}
-				else{
+			var $item_id=$(this).find('option:selected').val();
+			var $item = $(this);
+			var $container=$(this).parents("."+$item.data( "type" ));
+			var $id = 0;
+			if ($("input[name='id']").length > 0) {
+				$id=$("input[name='id']").val();
+			}
+			switch( $item.data( "type" ) ) {
+				case "purchase_item":
+					$url = "purchase_manage.php";
+					$data = {"tab": "get_unit_price", "id": $item_id, 'parent_id': $id}
+					$field_class = ".purchase_price";
+					$field_with_tax_class = ".purchase_price_with_tax";
+				break;
+				case "purchase_return_item":
+					$url = "purchase_return_manage.php";
+					$data = {"tab": "get_unit_price", "id": $item_id, 'parent_id': $id, 'purchase_id': $( "#purchase_id" ).val()}
+					$field_class = ".purchase_price";
+					$field_with_tax_class = ".purchase_price_with_tax";
+				break;
+				case "sales_item":
+					$url = "sales_manage.php";
+					$data = {"tab": "get_unit_price", "id": $item_id, 'parent_id': $id, 'customer_id': $( "#customer_id" ).val()}
+					$field_class = ".sales_price";
+					$field_with_tax_class = ".sales_price_with_tax";
+				break;
+				case "sales_return_item":
+					$url = "sales_return_manage.php";
+					$data = {"tab": "get_unit_price", "id": $item_id, 'parent_id': $id, 'customer_id': $( "#customer_id" ).val(), 'sales_id': $( "#sales_id" ).val()}
+					$field_class = ".sales_price";
+					$field_with_tax_class = ".sales_price_with_tax";
+				break;
+			}
+			if($item_id>0){
+				$.get($url, $data, function($prices){
+					$prices = JSON.parse($prices)
+					$container.find($field_class).val($prices[0]);
+					$container.find($field_with_tax_class).val($prices[1]);
 					update_total($container);
-				}
+				});
 			}
 			else{
-				var $container=$(this).parents(".purchase_item");
 				update_total($container);
 			}
-		}).change();
-		$(".sale_item .unit_price, .sale_item .unit_price1, .sale_item .quantity, .purchase_item .quantity, .purchase_item .unit_price").change(function(){
-			$container=$(this).parents(".sale_item");
-			//$('.sale_item .quantity')		
-			if( $container.length > 0 ) {
-				$id=$container.find(".item_select option:selected").val();
-				$val=parseInt($(this).val());
-				if($id>0 && $val>0){
-					// if edit recrd
-					if (($('#transaction_id').length > 0)){
-						$transId=$('#transaction_id').val();
-						}
-					else
-						$transId=0;
-					$.get("sales_manage.php", {"tab":"get_quantity","id":$id ,"transcationid":$transId}, function($quantity){
-						// if($val>$quantity){
-						// 	$container.find(".quantity").val($quantity);
-						// }
-						update_total($container);		
-					});
-				}
-				else{
-					update_total($container);
-				}
-			}
-			else{
-				$container=$(this).parents(".purchase_item");
-				update_total($container);
-			}
+		}).change();	
+		$("."+$type+" input[type=text]").change(function(){
+			$container=$(this).parents("."+$type);
+			update_total($container);
 		});
-		$("#discount").change(function(){
+		$("#discount, #payment_account_id").change(function(){
 			$this = $(this);
-			update_total($("."+$this.data("container_class")+":first-child"));
-		});
-		
-		$("#cash_receive").change(function(){
-			$this = $(this);
-			$return = $this.val() - $grand_total_price;
-			$("#cash_return").val($return);
+			update_total($("."+$type).first());
 		});
 		$(".add_list_item").click(function(e){
 			e.preventDefault();
 			$this = $(this);
-			
-			
-			$container=$this.parents("."+$this.data("container_class")).last();
-			
+			$container=$this.parents("."+$type).last();
 			$new_container = $clone_container.clone(true);
-			$new_container.find( '.quantity' ).val(1);
-			$new_container.find( '.unit_price, .total_price' ).val(0);
-			//$new_container.find('.chosen-container').remove();
-			//$new_container.find("select.item_select").show();
+			$new_container.find( '.item_select' ).val('');
+			$new_container.find( 'input[type=text]' ).val(0);
 			$new_container.insertAfter($container);
-			$("."+$this.data("container_class")).last().find("select.item_select").val('').chosen({"width": "100%"});
+			$("."+$type).last().find("select.item_select").chosen({"width": "100%"});
 			update_total($container);
 		});
 		$(".delete_list_item").click(function(e){
 			e.preventDefault();
 			$this = $(this);
 			if($(".delete_list_item").length>1){
-				$container = $this.parents("."+ $this.data("container_class") );
+				$container = $this.parents("."+ $type );
 				$temp_container = $container.prev() || $container.next();
 				$container.remove();
 				update_total($temp_container);
 			}
 			else{
-				alert("There must an an item in a list.");
+				alert("There must an item in a list.");
 			}
 		});
 		$clone_container = $clone_container.last().clone(true);
 		$("select.item_select").chosen({width: "100%"});
+		$( "#customer_id" ).change( function(){
+			$(".item_select").change();
+		} ).change();
 	}
 });
 function update_total($container){
-	if($container.hasClass("sale_item"))
-		$class="sale_item";
-	else
-		$class="purchase_item";
-			$container.find(".total_price").val(parseFloat($container.find(".unit_price").val())*parseFloat($container.find(".quantity").val()));
-			$container.find(".total_price1").val(parseFloat($container.find(".unit_price1").val())*parseFloat($container.find(".quantity").val()));
-	
+	var $type = $(".item_select").first().data( "type" );
+	switch( $type ) {
+		case "purchase_item":
+			$field_class = ".purchase_price";
+			$field_with_tax_class = ".purchase_price_with_tax";
+		break;
+		case "purchase_return_item":
+			$field_class = ".purchase_price";
+			$field_with_tax_class = ".purchase_price_with_tax";
+		break;
+		case "sales_item":
+			$field_class = ".sales_price";
+			$field_with_tax_class = ".sales_price_with_tax";
+		break;
+		case "sales_return_item":
+			$field_class = ".sales_price";
+			$field_with_tax_class = ".sales_price_with_tax";
+		break;
+	}
+	$container.find(".total_price").val(((parseFloat($container.find($field_with_tax_class).val()))*parseFloat($container.find(".quantity").val())).toFixed(2));
 	$container=$container.parent();
-	$grand_total_item=$grand_total_price=$grand_total_price1=0;
+	$grand_total_item=$grand_total_price=0;
 	$sn=1;
-	$container.find("."+$class).each(function(){
+	$container.find("."+$type).each(function(){
 		$(this).find(".serial_number").html($sn);
 		$grand_total_item+=parseFloat($(this).find(".quantity").val());
 		$grand_total_price+=parseFloat($(this).find(".total_price").val());
-		$grand_total_price1+=parseFloat($(this).find(".total_price1").val());
 		$sn++;
 	});
 	$grand_total_price -= parseFloat($("#discount").val());
 	$container.find('.grand_total_item').html($grand_total_item);
-	
-	//if( $("input[name='id']").length == 0 && $('#payment_amount').length > 0 && $('#payment_account_id').val() != ''  ){
-	if($('#payment_amount').length > 0 && $('#payment_account_id').val() != '' ){
-		
-		$("#type").change(function(){
-			$typeval=$(this).find('option:selected').val();
-			console.log($typeval);
-			if($typeval==1){
-				$('.payment_amount').val(0);
-				$('#payment_account_id').val(0);
-				$('.payment_amount').prop('disabled', true);
-			}
-			else{
-				$('.payment_amount').prop('disabled', false);
-				$container.find('.payment_amount').val($grand_total_price);
-			}
-			
-		});
-		$container.find('.payment_amount').val($grand_total_price);
-		
-	}
-	
-	if( $grand_total_price >= 0 || $grand_total_price1 >= 0 ) {
-		$container.find('.grand_total_price').html("Rs. "+(Math.round($grand_total_price* 100) / 100));
-		$container.find('.grand_total_price1').html("Rs. "+(Math.round($grand_total_price1* 100) / 100));
+	if( $grand_total_price >= 0 ) {
+		$container.find('.grand_total_price').html((Math.round($grand_total_price * 100) / 100));
 	}
 	else{
-		$container.find('.grand_total_price').html("Rs. "+"("+(Math.round(Math.abs($grand_total_price)* 100) / 100)+")");
-		
+		$container.find('.grand_total_price').html("("+(Math.round(Math.abs($grand_total_price)* 100) / 100)+")");
+	}
+	if( $("input[name='id']").length == 0 && $('#payment_amount').length > 0 && $('#payment_account_id').val() != ''  ){
+		$('#payment_amount').val(Math.round(Math.abs($grand_total_price)* 100) / 100);
 	}
 }

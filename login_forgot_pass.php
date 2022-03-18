@@ -21,7 +21,7 @@ include("include/utility.php");
         	<div class="login-form">
       		<form name="loginfrm" action="login.php" method="post">
         		<div class="top">
-          			<a href="index.php" class=""><img src="<?php echo $file_upload_root;?>config/<?php echo get_config("login_logo");?>" /></a>
+          			<h1><?php $admin_logo=get_config("admin_logo"); ?><img src="<?php echo $file_upload_root;?>config/<?php echo $admin_logo;?>" /><span><?php // echo $site_title;?></span></h1>
           			<h4>Please Login to continue.</h4>
         		</div>
         		<div class="form-area">

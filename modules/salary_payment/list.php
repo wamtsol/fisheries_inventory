@@ -64,6 +64,7 @@ if($employee_id!=""){
                     <input type="checkbox" id="select_all" value="0" title="Select All Records">
                     <label for="select_all"></label></div></th>
                 <th width="25%">Employee</th>
+                <th width="10%">Project</th>
                 <th width="15%">Datetime</th>
                 <th width="15%">Amount</th>
                 <th width="15%">Paid By</th>
@@ -86,6 +87,7 @@ if($employee_id!=""){
                             <label for="<?php echo "rec_".$sn?>"></label></div>
                         </td>
                         <td><?php if($r["employee_id"]==0) echo "Default"; else echo get_field($r["employee_id"], "admin","name");?></td>
+                        <td><?php echo get_field($r["project_id"], "project","title");?></td>
                         <td><?php echo datetime_convert($r["datetime_added"]); ?></td>
                         <td><?php echo curr_format(unslash($r["amount"])); ?></td>
                         <td><?php if($r["account_id"]==0) echo "Default"; else echo get_field($r["account_id"], "account","title");?></td>

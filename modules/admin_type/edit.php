@@ -2,9 +2,9 @@
 if(!defined("APP_START")) die("No Direct Access");
 ?>
 <div class="page-header">
-    <h1 class="title">Edit Admin Type</h1>
+    <h1 class="title">Edit User Type</h1>
     <ol class="breadcrumb">
-        <li class="active">Manage Admin Type</li>
+        <li class="active">Manage User Type</li>
     </ol>
     <div class="right">
         <div class="btn-group" role="group" aria-label="..."> <a href="admin_type_manage.php" class="btn btn-light editproject">Back to List</a> </div>

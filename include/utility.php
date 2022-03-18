@@ -13,15 +13,103 @@ function get_config($var){
 }
 $admin_types = array("No","Yes");
 $account_type = array("Current Assets","Fixed Assets","Capital");
+$schedule_array = array("Monthly","Daily","Weekly","Fortnightly","Quarterly");
+function get_nextrun( $schedule, $day_number, $lastrun ){
+	global $day_name;
+	if( $schedule == 0 ) {
+		$lastrun = strtotime( "first day of this month midnight", $lastrun );
+		$str = 'next month';
+	}
+	else if( $schedule == 1 ) {
+		$lastrun = strtotime( "this midnight", $lastrun );
+		$str = 'tomorrow';
+	}
+	else if( $schedule == 2 ) {
+		$lastrun = strtotime('next Monday -1 week', strtotime('this sunday midnight', $lastrun));
+		$str = 'next week';
+	}
+	else if( $schedule == 3 ) {
+		$lastrun = strtotime( "this fortnight midnight", $lastrun );
+		$str = 'next fortnight';
+	}
+	else{
+		$lastrun = strtotime( "first day of this month midnight", $lastrun );
+		$str = '+3 month';
+	}
+	if( $day_number > 0 ) {
+		if( $day_number < 100 ) {
+			$ts = strtotime( ($schedule == 2?'':'First ').$day_name[ $day_number-1 ]." ".($schedule == 2?'':'of ').$str, $lastrun );
+		}
+		else{
+			$ts = strtotime( "+".($day_number-100)." days", strtotime( $str, $lastrun ));
+		}
+	}
+	else{
+		$ts = strtotime( $str, $lastrun );
+	}
+	return $ts;
+}
+function get_schedule( $schedule, $day_number ){
+	global $schedule_array, $day_name;
+	$schedule_text = $schedule_array[$schedule];
+	if( $day_number > 0 ) {
+		if( $day_number < 100 ) {
+			$schedule_text = 'First '.$day_name[ $day_number-1 ]." of  ".$schedule_text;	
+		}
+		else{
+			$schedule_text = "After ".($day_number-100)." day".(($day_number-100)>1?"s":"")." ".$schedule_text;
+		}
+	}
+	return $schedule_text;
+}
+function run_schedule(){
+	global $dblink;
+	$rs = doquery( "select * from scheduled_transaction where nextrun < '".time()."' and status=1", $dblink );
+	if( numrows( $rs ) > 0 ) {
+		while( $r = dofetch( $rs ) ){
+			$r[ "details" ] = str_replace( array(
+				'[date]',
+				'[day]',
+				'[month]',
+				'[year]'
+			), array(
+				date("d/m/Y"),
+				date('l'),
+				date('F'),
+				date('Y')
+			), $r[ "details" ]);
+			if( $r[ "type" ] == 0 ) {
+				$sql="INSERT INTO transaction ( project_id, account_id, reference_id, datetime_added, amount, details, added_by) VALUES ( '".$r["project_id"]."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
+				doquery($sql,$dblink);
+			}
+			else if( $r[ "type" ] == 1 ) {
+				$sql="INSERT INTO expense ( project_id, expense_category_id, account_id, datetime_added, amount, details, added_by) VALUES ( '".$r["project_id"]."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
+				doquery($sql,$dblink);
+			}
+			else if( $r[ "type" ] == 2 ) {
+				$month = date( "n", strtotime( "last month" ))-1;
+				$year = date( "Y", strtotime( "last month" ));
+				doquery( "insert into salary(employee_id, month, year, datetime_added, amount, added_by) values('".$r["account_id"]."', '".$month."','".$year."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["added_by"]."')", $dblink );
+				$salary_id = inserted_id();
+				$sql="INSERT INTO salary_payment ( salary_id, employee_id, account_id, datetime_added, amount, details, added_by) VALUES ( '".$salary_id."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
+				doquery($sql,$dblink);
+			}
+			$r[ "lastrun" ] = $r[ "nextrun" ];
+			$r[ "nextrun" ] = get_nextrun( $r[ "schedule" ], $r[ "day_number" ], $r[ "lastrun" ] );
+			doquery( "update scheduled_transaction set lastrun = '".$r[ "lastrun" ]."', nextrun = '".$r[ "nextrun" ]."' where id = '".$r[ "id" ]."'", $dblink );
+		}
+	}
+}
+run_schedule();
 $admin_email=get_config("admin_email");
 $site_title=get_config("site_title");
 $site_url=get_config("site_url");
 $admin_logo=get_config("admin_logo");
-$working_days=array("No", "Yes");
 $login_logo=get_config("login_logo");
+$reciept_logo=get_config("reciept_logo");
 function admin_logo(){
 	global $admin_logo, $site_title, $site_url;
-	echo '<a href="'.$site_url.'/inventory">';
+	echo '<a href="'.$site_url.'/tamseeltraders">';
 	if(!empty($admin_logo)){
 		echo '<img src="./uploads/config/'.$admin_logo.'" alt="'.$site_title.'" title="'.$site_title.'" />';
 	}
@@ -48,7 +136,7 @@ $imagetypes=array("image/bmp","image/x-windows-bmp","image/jpg","image/jpeg","im
 $ziptypes=array("rar","zip");
 $month_array=array("Januray","February","March","April","May","June","July","August","September","October","November","December");
 $videotypes=array("video/mpeg", "video/mpeg4", "video/avi", "video/flv", "video/mov", "video/avi", "video/mpg", "video/wmv", "video/vid");
-$day_name=array('Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za');
+$day_name=array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 $month_name=array('jan','feb','maa','apr','mei','juni','juli','aug','sep','oct','nov','dec');
 /*--------------Send Mail Function--------------*/
 function sendmail($to, $subject, $message, $efrom){
@@ -186,86 +274,86 @@ function createThumb($image_path,$image_type,$thumb_size,$thumb_path, $height=""
 }
 
 /*--------------ImageCreateFromBMP Function--------------*/
-//function ImageCreateFromBMP($filename){
-//   if (! $f1 = fopen($filename,"rb")) return FALSE;
-//
-//   $FILE = unpack("vfile_type/Vfile_size/Vreserved/Vbitmap_offset", fread($f1,14));
-//   if ($FILE['file_type'] != 19778) return FALSE;
-//
-//   $BMP = unpack('Vheader_size/Vwidth/Vheight/vplanes/vbits_per_pixel'.
-//                 '/Vcompression/Vsize_bitmap/Vhoriz_resolution'.
-//                 '/Vvert_resolution/Vcolors_used/Vcolors_important', fread($f1,40));
-//   $BMP['colors'] = pow(2,$BMP['bits_per_pixel']);
-//   if ($BMP['size_bitmap'] == 0) $BMP['size_bitmap'] = $FILE['file_size'] - $FILE['bitmap_offset'];
-//   $BMP['bytes_per_pixel'] = $BMP['bits_per_pixel']/8;
-//   $BMP['bytes_per_pixel2'] = ceil($BMP['bytes_per_pixel']);
-//   $BMP['decal'] = ($BMP['width']*$BMP['bytes_per_pixel']/4);
-//   $BMP['decal'] -= floor($BMP['width']*$BMP['bytes_per_pixel']/4);
-//   $BMP['decal'] = 4-(4*$BMP['decal']);
-//   if ($BMP['decal'] == 4) $BMP['decal'] = 0;
-//
-//   $PALETTE = array();
-//   if ($BMP['colors'] < 16777216)
-//   {
-//    $PALETTE = unpack('V'.$BMP['colors'], fread($f1,$BMP['colors']*4));
-//   }
-//
-//   $IMG = fread($f1,$BMP['size_bitmap']);
-//   $VIDE = chr(0);
-//
-//   $res = imagecreatetruecolor($BMP['width'],$BMP['height']);
-//   $P = 0;
-//   $Y = $BMP['height']-1;
-//   while ($Y >= 0)
-//   {
-//    $X=0;
-//    while ($X < $BMP['width'])
-//    {
-//     if ($BMP['bits_per_pixel'] == 24)
-//        $COLOR = unpack("V",substr($IMG,$P,3).$VIDE);
-//     elseif ($BMP['bits_per_pixel'] == 16)
-//     {
-//        $COLOR = unpack("n",substr($IMG,$P,2));
-//        $COLOR[1] = $PALETTE[$COLOR[1]+1];
-//     }
-//     elseif ($BMP['bits_per_pixel'] == 8)
-//     {
-//        $COLOR = unpack("n",$VIDE.substr($IMG,$P,1));
-//        $COLOR[1] = $PALETTE[$COLOR[1]+1];
-//     }
-//     elseif ($BMP['bits_per_pixel'] == 4)
-//     {
-//        $COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
-//        if (($P*2)%2 == 0) $COLOR[1] = ($COLOR[1] >> 4) ; else $COLOR[1] = ($COLOR[1] & 0x0F);
-//        $COLOR[1] = $PALETTE[$COLOR[1]+1];
-//     }
-//     elseif ($BMP['bits_per_pixel'] == 1)
-//     {
-//        $COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
-//        if     (($P*8)%8 == 0) $COLOR[1] =  $COLOR[1]        >>7;
-//        elseif (($P*8)%8 == 1) $COLOR[1] = ($COLOR[1] & 0x40)>>6;
-//        elseif (($P*8)%8 == 2) $COLOR[1] = ($COLOR[1] & 0x20)>>5;
-//        elseif (($P*8)%8 == 3) $COLOR[1] = ($COLOR[1] & 0x10)>>4;
-//        elseif (($P*8)%8 == 4) $COLOR[1] = ($COLOR[1] & 0x8)>>3;
-//        elseif (($P*8)%8 == 5) $COLOR[1] = ($COLOR[1] & 0x4)>>2;
-//        elseif (($P*8)%8 == 6) $COLOR[1] = ($COLOR[1] & 0x2)>>1;
-//        elseif (($P*8)%8 == 7) $COLOR[1] = ($COLOR[1] & 0x1);
-//        $COLOR[1] = $PALETTE[$COLOR[1]+1];
-//     }
-//     else
-//        return FALSE;
-//     imagesetpixel($res,$X,$Y,$COLOR[1]);
-//     $X++;
-//     $P += $BMP['bytes_per_pixel'];
-//    }
-//    $Y--;
-//    $P+=$BMP['decal'];
-//   }
-//
-//   fclose($f1);
-//
-// return $res;
-//}
+/*function ImageCreateFromBMP($filename){
+   if (! $f1 = fopen($filename,"rb")) return FALSE;
+
+   $FILE = unpack("vfile_type/Vfile_size/Vreserved/Vbitmap_offset", fread($f1,14));
+   if ($FILE['file_type'] != 19778) return FALSE;
+
+   $BMP = unpack('Vheader_size/Vwidth/Vheight/vplanes/vbits_per_pixel'.
+                 '/Vcompression/Vsize_bitmap/Vhoriz_resolution'.
+                 '/Vvert_resolution/Vcolors_used/Vcolors_important', fread($f1,40));
+   $BMP['colors'] = pow(2,$BMP['bits_per_pixel']);
+   if ($BMP['size_bitmap'] == 0) $BMP['size_bitmap'] = $FILE['file_size'] - $FILE['bitmap_offset'];
+   $BMP['bytes_per_pixel'] = $BMP['bits_per_pixel']/8;
+   $BMP['bytes_per_pixel2'] = ceil($BMP['bytes_per_pixel']);
+   $BMP['decal'] = ($BMP['width']*$BMP['bytes_per_pixel']/4);
+   $BMP['decal'] -= floor($BMP['width']*$BMP['bytes_per_pixel']/4);
+   $BMP['decal'] = 4-(4*$BMP['decal']);
+   if ($BMP['decal'] == 4) $BMP['decal'] = 0;
+
+   $PALETTE = array();
+   if ($BMP['colors'] < 16777216)
+   {
+    $PALETTE = unpack('V'.$BMP['colors'], fread($f1,$BMP['colors']*4));
+   }
+
+   $IMG = fread($f1,$BMP['size_bitmap']);
+   $VIDE = chr(0);
+
+   $res = imagecreatetruecolor($BMP['width'],$BMP['height']);
+   $P = 0;
+   $Y = $BMP['height']-1;
+   while ($Y >= 0)
+   {
+    $X=0;
+    while ($X < $BMP['width'])
+    {
+     if ($BMP['bits_per_pixel'] == 24)
+        $COLOR = unpack("V",substr($IMG,$P,3).$VIDE);
+     elseif ($BMP['bits_per_pixel'] == 16)
+     { 
+        $COLOR = unpack("n",substr($IMG,$P,2));
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     elseif ($BMP['bits_per_pixel'] == 8)
+     { 
+        $COLOR = unpack("n",$VIDE.substr($IMG,$P,1));
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     elseif ($BMP['bits_per_pixel'] == 4)
+     {
+        $COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
+        if (($P*2)%2 == 0) $COLOR[1] = ($COLOR[1] >> 4) ; else $COLOR[1] = ($COLOR[1] & 0x0F);
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     elseif ($BMP['bits_per_pixel'] == 1)
+     {
+        $COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
+        if     (($P*8)%8 == 0) $COLOR[1] =  $COLOR[1]        >>7;
+        elseif (($P*8)%8 == 1) $COLOR[1] = ($COLOR[1] & 0x40)>>6;
+        elseif (($P*8)%8 == 2) $COLOR[1] = ($COLOR[1] & 0x20)>>5;
+        elseif (($P*8)%8 == 3) $COLOR[1] = ($COLOR[1] & 0x10)>>4;
+        elseif (($P*8)%8 == 4) $COLOR[1] = ($COLOR[1] & 0x8)>>3;
+        elseif (($P*8)%8 == 5) $COLOR[1] = ($COLOR[1] & 0x4)>>2;
+        elseif (($P*8)%8 == 6) $COLOR[1] = ($COLOR[1] & 0x2)>>1;
+        elseif (($P*8)%8 == 7) $COLOR[1] = ($COLOR[1] & 0x1);
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     else
+        return FALSE;
+     imagesetpixel($res,$X,$Y,$COLOR[1]);
+     $X++;
+     $P += $BMP['bytes_per_pixel'];
+    }
+    $Y--;
+    $P+=$BMP['decal'];
+   }
+
+   fclose($f1);
+
+ return $res;
+}*/
 
 function get_image($img, $size, $folder){
 	global $site_url;
@@ -360,6 +448,39 @@ function getCountryCombo($country){
  	return $str;
 }
 $product_type = array("Simple","Group");
+$unit_type = array("HL","Sc","Ss");
+$pricing_type = array("Retailer","Wholesaler");
+$working_days = array("No","Yes");
+function getUnitType($value){
+	if( $value == 1 ) {
+		return "Sc";
+	}
+	elseif( $value == 2 ) {
+		return "Ss";
+	}
+	else {
+		return "HL";
+	}
+}
+function getPricingType($value){
+	if( $value == 1 ) {
+		return "Wholesaler";
+	}
+	else {
+		return "Retailer";
+	}
+}
+function getAccountType($value){
+	if( $value == 1 ) {
+		return "Fixed Assets";
+	}
+	elseif( $value == 2 ) {
+		return "Capital";
+	}
+	else {
+		return "Current Assets";
+	}
+}
 /*--------------getCountryName Function--------------*/
 function getCountryname($country){
 	global $dblink;
@@ -467,17 +588,7 @@ function getFilename($originalname, $title){
 	$ext=$ext[count($ext)-1];
 	return generate_seo_link($title).".".$ext;
 }
-function getAccountType($value){
-	if( $value == 1 ) {
-		return "Fixed Assets";
-	}
-	elseif( $value == 2 ) {
-		return "Capital";
-	}
-	else {
-		return "Current Assets";
-	}
-}
+
 /*--------------getSortCombo Function--------------*/
 function getSortCombo($table,$selected,$type,$more_cond='')
 {
@@ -581,10 +692,6 @@ function getInputBox($type, $value, $id, $class,$default_values){
 }
 /////////////////////////Date Convert///////////////////////////
 
-// function date_dbconvert($date){
-// 	$date = explode("/", $date);
-// 	return date("Y-m-d", strtotime($date[2]."-".$date[1]."-".$date[0]));
-// }
 function date_dbconvert($date){
 	if( !empty( $date ) ) {
 		$date = explode("/", $date);
@@ -595,16 +702,13 @@ function date_dbconvert($date){
 	}
 }
 function date_convert($date_added){
-	return date("d/m/Y", strtotime($date_added));
+	if( !empty( $date_added ) ) {
+		return date("d/m/Y", strtotime($date_added));
+	}
+	else{
+		return $date_added;
+	}
 }
-// function date_convert($date_added){
-// 	if( !empty( $date_added ) ) {
-// 		return date("d/m/Y", strtotime($date_added));
-// 	}
-// 	else{
-// 		return $date_added;
-// 	}
-// }
 function datetime_dbconvert($date){
 	$datetime = explode(" ", $date);
 	$date = date_dbconvert($datetime[0]);
@@ -697,9 +801,6 @@ function get_menu($position, $parent=0){
 		return $str;
 	}
 }
-// function curr_format($amount){
-// 	return number_format($amount, 2, '.',',')." ".get_config("currency_code");
-// }
 function curr_format($amount){
 	return ($amount<0?'(':'').number_format(abs($amount), 0, '.',',').($amount<0?')':'');
 }
@@ -1056,6 +1157,7 @@ function get_fontawesome_icons(){
 			$icons_array[]=array($icons[$i], $code);
 		}
 	}
+	usort( $icons_array, function( $a, $b ){ return strcmp( $a[0], $b[0] ); });
 	return $icons_array;
 }
 function update_meta($table, $table_id, $meta_key, $meta_value){
@@ -1194,26 +1296,30 @@ function convert_number_to_words($number) {
 
     return $string;
 }
+
 function get_balance( $account_id ){
 	return get_account_balance( $account_id );
 }
-function get_account_balance( $account_id, $datetime = "" ){
+function get_account_balance( $account_id, $datetime = "", $project_id = "" ){
 	global $dblink;
 	if( empty( $datetime ) ) {
 		$datetime = date( "Y-m-d H:i:s" );
 	}
-	$account = dofetch( doquery( "select is_petty_cash, balance from account where id='".$account_id."'", $dblink ) );
-	$balance = $account[ "balance" ];
-	$balance_transactions = dofetch( doquery( "select sum(amount) as balance from (SELECT id, amount as amount FROM `transaction` a where a.account_id='".$account_id."' and datetime_added<='".$datetime."' union select id, -amount from transaction b where b.reference_id='".$account_id."' and datetime_added<='".$datetime."') as transactions", $dblink ) );
+	if( empty( $project_id ) ) {
+		$account = dofetch( doquery( "select is_petty_cash, balance from account where id='".$account_id."'", $dblink ) );
+		$balance = $account[ "balance" ];
+	}
+	else {
+		$balance = 0;
+	}
+	$balance_transactions = dofetch( doquery( "select sum(amount) as balance from (SELECT id, amount as amount FROM `transaction` a where a.account_id='".$account_id."' and datetime_added<='".$datetime."'".($project_id != ''?" and project_id='".$project_id."'":"")." union select id, -amount from transaction b where b.reference_id='".$account_id."' and datetime_added<='".$datetime."'".($project_id != ''?" and project_id='".$project_id."'":"").") as transactions", $dblink ) );
 	$balance = $balance + $balance_transactions[ "balance" ];
-	$expense = dofetch( doquery( "select sum(amount) as total from expense where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'", $dblink ) );
+	$expense = dofetch( doquery( "select sum(amount) as total from expense where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'".($project_id != ''?" and project_id='".$project_id."'":""), $dblink ) );
 	$balance -= $expense[ "total" ];
-	$salary_payment = dofetch( doquery( "select sum(amount) as total from salary_payment where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'", $dblink ) );
-	$balance -= $salary_payment[ "total" ];
-	$supplier_payment = dofetch( doquery( "select sum(amount) as total from supplier_payment where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'", $dblink ) );
-	$balance -= $supplier_payment[ "total" ];
-	$customer_payment = dofetch( doquery( "select sum(amount) as total from customer_payment where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'", $dblink ) );
-	$balance += $customer_payment[ "total" ];
+	$project_payment = dofetch( doquery( "select sum(amount) as total from project_payment where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'".($project_id != ''?" and project_id='".$project_id."'":""), $dblink ) );
+	$balance += $project_payment[ "total" ];
+    $salary_payment = dofetch( doquery( "select sum(amount) as total from employee_salary_payment where status=1 and account_id = '".$account_id."' and datetime_added<='".$datetime."'".($project_id != ''?" and project_id='".$project_id."'":""), $dblink ) );
+    $balance -= $salary_payment[ "total" ];
 	return $balance;
 }
 function get_account_of_type( $type ){
@@ -1229,6 +1335,20 @@ function get_account_of_type( $type ){
 		}
 	}
 	return $GLOBALS[ "type" ][ $type ];
+}
+function get_project_of_employee( $employee ){
+	global $dblink;
+	if( !isset( $GLOBALS[ "employee" ][ $employee ] ) ) {
+		$rs = doquery( "select id from project a inner join employee_2_project b on a.id = b.project_id where b.employee_id='".$employee."'", $dblink );
+		if( numrows( $rs ) > 0 ) {
+			$r = dofetch( $rs );
+			$GLOBALS[ "employee" ][ $employee ] = $r[ "id" ];
+		}
+		else {
+			$GLOBALS[ "employee" ][ $employee ] = "";
+		}
+	}
+	return $GLOBALS[ "employee" ][ $employee ];
 }
 function is_holiday( $date ){
 	global $dblink;
@@ -1249,16 +1369,33 @@ function is_holiday( $date ){
 	}
 	return $holiday;
 }
-function get_user_balance( $employee_id ){
-	$total = get_user_salary_total( $employee_id );
-	return $total[ "balance" ];
-}
-function get_user_salary_total( $employee_id ){
+function get_token_number( $order ){
 	global $dblink;
-	$sql = "SELECT id, employee_id, CONCAT(LAST_DAY(CONCAT(year,'-',month+1,'-01')),' 00:00:00') as dt, concat( MONTHNAME(LAST_DAY(CONCAT(year,'-',month+1,'-01'))), ' ', year, ' salary') as details, 0 as debit, amount as credit FROM salary where status=1 and employee_id = '".$employee_id."' union select a.id, employee_id, a.datetime_added as dt, concat(a.details, if(a.details='','', ' - '),'Paid by ', b.title), amount as debit, 0 as credit from salary_payment a left join account b on a.account_id = b.id where a.status=1 and employee_id = '".$employee_id."' order by dt";
-	$balance = dofetch( doquery( "select sum(debit) as total_debit, sum(credit) as total_credit, sum(debit)-sum(credit) balance from (".$sql.") as a", $dblink ));
-	return $balance;
+	$dt = get_last_closing_date( $order["date"] );
+    $order_id = dofetch(doquery("select count(1) from sales where date >='".$dt."' and date<'".$order["date"]."' and ".($order["customer_id"]==0?"customer_id=0":"customer_id<>0")."", $dblink ));
+	$order_id = $order_id[ "count(1)" ] + 1;
+	return ($order["customer_id"]==0?"":"*").$order_id;
 }
+
+function get_last_closing_date( $date = "" ){
+	global $dblink;
+	if( empty( $date ) ) {
+		$date = date( "Y-m-d H:i:s" );
+	}
+	if( !isset( $GLOBALS["lastclosing"][ $date ] ) ) {
+		$rs = doquery( "select * from closing_activity where datetime <= '".$date."' order by datetime desc limit 0,1", $dblink );
+		if( numrows( $rs ) > 0 ) {
+			$r = dofetch( $rs );
+			$dt = $r[ "datetime" ];
+		}
+		else{
+			$dt = "0000-00-00 00:00:00";
+		}
+		$GLOBALS["lastclosing"][ $date ] = $dt;
+	}
+	return $GLOBALS["lastclosing"][ $date ];
+}
+
 function get_customer_balance( $customer_id, $dt = 0 ){
 	global $dblink;
 	if( empty( $dt ) ) {
@@ -1268,29 +1405,13 @@ function get_customer_balance( $customer_id, $dt = 0 ){
 	$customer = doquery( "select balance from customer where id = '".$customer_id."'", $dblink );
 	if( numrows( $customer ) > 0 ) {
 		$customer = dofetch( $customer );
-		$sql="select sum(amount) as amount from (select concat( 'Sale #', id) as transaction, net_price as amount from sales where customer_id = '".$customer_id."' and datetime_added <='".$dt."' union select concat( 'Payment #', id) as transaction, -amount from customer_payment where customer_id = '".$customer_id."' and datetime_added <='".$dt."') as transactions";
-		//echo $sql;
+		$sql="select sum(amount) as amount from (select concat( 'Sale #', id) as transaction, net_price as amount from sales where customer_id = '".$customer_id."' and date <='".$dt."' union select concat( 'Sale Return #', id) as transaction, -net_price as amount from sales_return where customer_id = '".$customer_id."' and date <='".$dt."' union select concat( 'Payment #', id) as transaction, -amount from customer_payment where customer_id = '".$customer_id."' and datetime <='".$dt."') as transactions";
 		$balance=dofetch(doquery($sql,$dblink));
 		$balance = $customer["balance"] + $balance[ "amount" ];
 	}
 	return $balance;
 }
-function get_store_balance( $store_id, $dt = 0 ){
-	global $dblink;
-	if( empty( $dt ) ) {
-		$dt = date( "Y-m-d H:i:s" );
-	}
-	$balance = 0;
-	$store = doquery( "select balance from store where id = '".$store_id."'", $dblink );
-	if( numrows( $store ) > 0 ) {
-		$store = dofetch( $store );
-		$sql="select sum(amount) as amount from (select concat( 'Stock Move #', id) as transaction, net_price as amount from stock_movement where store_id = '".$store_id."' and datetime_added <='".$dt."' union select concat( 'Store Payment #', id) as transaction, -amount from store_payment where store_id = '".$store_id."' and datetime_added <='".$dt."') as transactions";
-		//echo $sql;
-		$balance=dofetch(doquery($sql,$dblink));
-		$balance = $store["balance"] + $balance[ "amount" ];
-	}
-	return $balance;
-}
+
 function get_supplier_balance( $supplier_id, $dt = 0 ){
 	global $dblink;
 	if( empty( $dt ) ) {
@@ -1300,9 +1421,19 @@ function get_supplier_balance( $supplier_id, $dt = 0 ){
 	$supplier = doquery( "select balance from supplier where id = '".$supplier_id."'", $dblink );
 	if( numrows( $supplier ) > 0 ) {
 		$supplier = dofetch( $supplier );
-		$sql="select sum(amount) as amount from (select concat( 'Purchase #', id) as transaction, net_price*if(type=0,1,-1) as amount from purchase where supplier_id = '".$supplier_id."' and datetime_added <='".$dt."' union select concat( 'Payment #', id) as transaction, -amount from supplier_payment where supplier_id = '".$supplier_id."' and datetime_added <='".$dt."') as transactions";
+		$sql="select sum(amount) as amount from (select concat( 'Purchase #', id) as transaction, net_price as amount from purchase where supplier_id = '".$supplier_id."' and date <='".$dt."' union select concat( 'Purchase Return #', id) as transaction, -net_price as amount from purchase_return where supplier_id = '".$supplier_id."' and date <='".$dt."' union select concat( 'Payment #', id) as transaction, -amount from supplier_payment where supplier_id = '".$supplier_id."' and datetime <='".$dt."') as transactions";
 		$balance=dofetch(doquery($sql,$dblink));
 		$balance = $supplier["balance"] + $balance[ "amount" ];
 	}
+	return $balance;
+}
+function get_user_balance( $employee_id ){
+	$total = get_user_salary_total( $employee_id );
+	return $total[ "balance" ];
+}
+function get_user_salary_total( $employee_id ){
+	global $dblink;
+	$sql = "SELECT id, employee_id, CONCAT(LAST_DAY(CONCAT(year,'-',month+1,'-01')),' 00:00:00') as dt, concat( MONTHNAME(LAST_DAY(CONCAT(year,'-',month+1,'-01'))), ' ', year, ' salary') as details, 0 as debit, amount as credit FROM employee_salary where status=1 and employee_id = '".$employee_id."' union select a.id, employee_id, a.datetime_added as dt, concat(a.details, if(a.details='','', ' - '),'Paid by ', b.title), amount as debit, 0 as credit from employee_salary_payment a left join account b on a.account_id = b.id where a.status=1 and employee_id = '".$employee_id."' order by dt";
+	$balance = dofetch( doquery( "select sum(debit) as total_debit, sum(credit) as total_credit, sum(debit)-sum(credit) balance from (".$sql.") as a", $dblink ));
 	return $balance;
 }

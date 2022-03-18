@@ -8,7 +8,8 @@ else{
 	$datetime_added=date("d/m/Y H:i A");
 	$amount="";
 	$account_id="";
-	$details="";
+    $details="";
+    $project_id="";
 }
 ?>
 <div class="page-header">
@@ -36,6 +37,26 @@ else{
                         while($rec=dofetch($res)){
                         ?>
                         <option value="<?php echo $rec["id"]?>"<?php echo($employee_id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["name"]); ?></option>
+                        <?php			
+                        }			
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <label class="col-sm-2 control-label no-padding-right" for="project_id">Project</label>
+            <div class="col-sm-10">
+                <select name="project_id" id="project_id" class="col-xs-12" title="Choose Option">
+                    <option value="0">Select Project</option>
+                    <?php
+                    $res=doquery("Select * from project where status = 1 order by title",$dblink);
+                    if(numrows($res)>0){
+                        while($rec=dofetch($res)){
+                        ?>
+                        <option value="<?php echo $rec["id"]?>"<?php echo($project_id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["title"]); ?></option>
                         <?php			
                         }			
                     }

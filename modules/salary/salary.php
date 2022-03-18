@@ -18,8 +18,7 @@ $is_search = true;
     	<div>
         	<form class="form-horizontal" action="" method="get">
                 <input type="hidden" name="tab" value="salary"  />
-                <div class="col-sm-3 margin-btm-5">                    
-                <input type="text" title="Enter Date" value="<?php echo $start_date;?>" name="start_date" id="start_date" class="date-picker form-control" />
+                <div class="col-sm-3 margin-btm-5">                    <input type="text" title="Enter Date" value="<?php echo $start_date;?>" name="start_date" id="start_date" class="date-picker form-control" />
                 </div>
                 <div class="col-sm-3 margin-btm-5">
                     <input type="text" title="Enter Date" value="<?php echo $end_date;?>" name="end_date" id="end_date" class="date-picker form-control" />
@@ -52,7 +51,7 @@ $is_search = true;
             </thead>
             <tbody>
                 <?php
-                if( count( $employees  ) > 0 ) {
+                if( count( $employees > 0 ) ) {
                     $sn=1;
                     
                     foreach( $employees as $employee ){

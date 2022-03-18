@@ -79,7 +79,7 @@
     </div>
     <div>
     	<form action="upload_center_do.php" method="post" enctype="multipart/form-data" id="upload_center_form">
-        	<strong>Add New: </strong><br />
+        	<strong>Add New: </strong>
             Title: <input type="text" name="title" id="title" value="" />&nbsp;File: <input type="file" name="file" id="file" />&nbsp;<input type="submit" name="file_submit" value="Submit" /><?php if(isset($err)) echo $err;?>
         </form>
     </div>

@@ -28,7 +28,7 @@ padding:10px;
 }
 #UploadCenterContent #file-list{
 background:#fff;
-margin:10px;
+margin:5px;
 height:400px;
 overflow:auto;
 }
@@ -89,8 +89,14 @@ color:#000000;
 margin-bottom:10px;
 border:solid 1px #999;
 }
-#upload_center_form input[type="text"] {
+#upload_center_form input[type="text"],#upload_center_form input[type="file"] {
     padding: 0;
+	height:auto;
+}
+#upload_center_form input[type="submit"]{
+	height:auto;
+	padding-top:0;
+	padding-bottom:0;
 }
 #upload_center_form input[type="file"] {
     display: inline-block;

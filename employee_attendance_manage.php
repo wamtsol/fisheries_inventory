@@ -30,7 +30,7 @@ switch($tab){
 		//$current_academic_year = current_academic_year();
 		$employee_list = array();
 		$employee_attendance = doquery( "select * from employee_daily_attendance a inner join admin b on a.taken_by = b.id where date='".date_dbconvert( $date )."'", $dblink );
-		$employees = doquery( "select * from admin where status=1 order by admin_type_id", $dblink );
+		$employees = doquery( "select * from employee where status=1 order by name", $dblink );
 		if( numrows( $employees ) > 0 ) {
 			while( $employee = dofetch( $employees ) ){
 				if( numrows($employee_attendance) == 0 || numrows( doquery( "select * from employee_attendance where employee_id='".$employee[ "id" ]."' and date='".date_dbconvert( $date )."'", $dblink ) ) > 0 ) {

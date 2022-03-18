@@ -1,7 +1,6 @@
 <?php
 if(!defined("APP_START")) die("No Direct Access");
 $rs = doquery( $sql, $dblink );
-$amount = 0;
 ?>
 <style>
 h1, h2, h3, p {
@@ -31,26 +30,14 @@ table {
 </style>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr class="head">
-	<th colspan="6">
-    	<h1><?php echo get_config( 'site_title' )?></h1>
+	<th colspan="9">
+    	<?php echo get_config( 'fees_chalan_header' )?>
     	<h2>Supplier Payment List</h2>
         <p>
         	<?php
 			echo "List of";
-			if( !empty( $date_from ) || !empty( $date_to ) ){
-				echo "<br />Date";
-			}
-			if( !empty( $date_from ) ){
-				echo " from ".$date_from;
-			}
-			if( !empty( $date_to ) ){
-				echo " to ".$date_to."<br>";
-			}
 			if( !empty( $supplier_id ) ){
 				echo " Supplier: ".get_field($supplier_id, "supplier","supplier_name");
-			}
-			if( !empty( $account_id ) ){
-				echo " Paid By: ".get_field($account_id, "account","title");
 			}
 			?>
         </p>
@@ -63,33 +50,24 @@ table {
     <th>Datetime</th>
     <th align="right">Amount</th>
     <th>Paid By</th>
-    <th>Details</th>
 </tr>
 <?php
 if( numrows( $rs ) > 0 ) {
 	$sn = 1;
 	while( $r = dofetch( $rs ) ) {
-		$amount += $r["amount"];
 		?>
 		<tr>
         	<td align="center"><?php echo $sn++?></td>
            	<td align="center"><?php echo $r["id"]?></td>
             <td><?php echo unslash( $r[ "supplier_name" ] );?></td>
-            <td><?php echo datetime_convert($r["datetime_added"]); ?></td>
+            <td><?php echo datetime_convert($r["datetime"]); ?></td>
             <td align="right"><?php echo curr_format(unslash($r["amount"])); ?></td>
             <td><?php echo get_field( unslash($r["account_id"]), "account", "title" ); ?></td>
-            <td class="text-right"><?php echo unslash($r["details"]); ?></td>
         </tr>
 		<?php
 	}
 }
 ?>
-<tr>
-    <th colspan="4" style="text-align:right;">Total</th>
-    <th style="text-align:right;"><?php echo curr_format($amount);?></th>
-    <th></th>
-    <th></th>
-</tr>
 </table>
 <?php
 die;

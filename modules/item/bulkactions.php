@@ -15,38 +15,33 @@ if(isset($_GET["action"]) && $_GET["action"]!=""){
 		if($bulk_action=="delete"){
 			$i=0;
 			while($i<count($id)){
-				$prev_icon=doquery("select name_in_urdu from items where id='".$id[$i]."'",$dblink);
-				if(numrows($prev_icon)>0){
-					$p_icon=dofetch($prev_icon);
-					deleteFile($file_upload_root."item/".$p_icon["name_in_urdu"]);
-				}
-				doquery("delete from items where id='".$id[$i]."'",$dblink);
+				doquery("delete from item where id='".$id[$i]."'",$dblink);
 				$i++;
 			}
-			header("Location: items_manage.php?tab=list&msg=".url_encode("Records Deleted."));
+			header("Location: item_manage.php?tab=list&msg=".url_encode("Records Deleted."));
 			die;
 		}
 		if($bulk_action=="statuson"){
 			$i=0;
 			while($i<count($id)){
-				doquery("update items set status=1 where id='".$id[$i]."'",$dblink);
+				doquery("update item set status=1 where id='".$id[$i]."'",$dblink);
 				$i++;
 			}
-			header("Location: items_manage.php?tab=list&msg=".url_encode("Records Status On."));
+			header("Location: item_manage.php?tab=list&msg=".url_encode("Records Status On."));
 			die;
 		}
 		if($bulk_action=="statusof"){
 			$i=0;
 			while($i<count($id)){
-				doquery("update items set status=0 where id='".$id[$i]."'",$dblink);
+				doquery("update item set status=0 where id='".$id[$i]."'",$dblink);
 				$i++;
 			}
-			header("Location: items_manage.php?tab=list&msg=".url_encode("Records Status Off."));
+			header("Location: item_manage.php?tab=list&msg=".url_encode("Records Status Off."));
 			die;
 		}
 	}
 	else{
-		header("Location: items_manage.php?tab=list&err=".url_encode($err));
+		header("Location: item_manage.php?tab=list&err=".url_encode($err));
 		die;					
 	}
 }

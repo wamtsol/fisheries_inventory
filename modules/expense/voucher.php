@@ -1,11 +1,20 @@
 <?php
 if(!defined("APP_START")) die("No Direct Access");
+$sql = "select * from expense where id = '".slash($_GET["id"])."'";
 $rs = doquery( $sql, $dblink );
 $r=dofetch($rs);
 ?>
 <style>
+.clearfix:after{
+    clear:both;
+    content:"";
+    display:block;
+}
 h1, h2, h3, p {
     margin: 0 0 10px;
+}
+.logo {
+    float: left;
 }
 .voucher{
 	max-width:960px;
@@ -33,8 +42,9 @@ table {
   clear: both;
   display: table;
 }
-.voucher_head{
-	text-align:center;
+.voucher_head {
+    text-align: right;
+    margin: 15px 0;
 }
 .voucher_head h1{
 	font-size: 20px;
@@ -43,11 +53,13 @@ table {
 }
 .voucher_head h2{
 	font-size: 20px;
-	text-transform: uppercase;
-	margin-bottom:30px;
+    text-transform: uppercase;
+    margin-bottom: 0px;
+    padding-top: 19px;
+	color: #666;
 }
 .voucher_detail p{
-	font-size:16px;
+	font-size:14px;
 	border-bottom: 1px solid;
 	padding-bottom: 5px;
 }
@@ -71,23 +83,26 @@ table {
 	padding:0;
 }
 .signature li{
-	width:33%;
-	display:inline-block;
+	width: 33.3%;
+    float: left;
+    list-style: none;
 }
 .signature td{ border: none;
 padding: 0;
 height: 100px;
 vertical-align: bottom;}
+.logo img{ width:200px;}
 </style>
 <div class="voucher">
-<div class="voucher_head">
-	<?php echo get_config( 'fees_chalan_header' )?>
+<div class="voucher_head clearfix">
+    <div class="logo"><?php $admin_logo=get_config("admin_logo"); if(empty($admin_logo)) echo $site_title; else { ?><img src="<?php echo $file_upload_root;?>config/<?php echo $admin_logo?>" /><?php }?></div>
     <h2>Expense Voucher</h2>
 </div>
 <div class="voucher_detail clear">
 	<div class="detail_left">
     	<p>VOUCHER NO: <?php echo $r["id"] ?></p>
         <p>DEBIT ACCOUNT: <?php echo get_field( unslash($r["expense_category_id"]), "expense_category", "title" ); ?></p>
+        <p>PROJECT: <?php echo get_field( unslash($r["project_id"]), "project", "title" ); ?></p>
     </div>
     <div class="detail_right">
     	<p>DATE: <?php echo datetime_convert($r["datetime_added"]); ?></p>

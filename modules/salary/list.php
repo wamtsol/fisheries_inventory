@@ -1,4 +1,5 @@
 <?php
+
 if(!defined("APP_START")) die("No Direct Access");
 $q="";
 $extra='';
@@ -64,6 +65,7 @@ if($employee_id!=""){
                     <input type="checkbox" id="select_all" value="0" title="Select All Records">
                     <label for="select_all"></label></div></th>
                 <th width="20%">Employee</th>
+                <th width="10%">Project</th>
                 <th width="20%">Year</th>
                 <th width="10%">Amount</th>
                 <th width="10%" class="text-center">Status</th>
@@ -85,6 +87,7 @@ if($employee_id!=""){
                             <label for="<?php echo "rec_".$sn?>"></label></div>
                         </td>
                         <td><?php if($r["employee_id"]==0) echo "Default"; else echo get_field($r["employee_id"], "admin","name");?></td>
+                        <td><?php echo get_field($r["project_id"], "project","title");?></td>
                         <td><?php echo $month_array[$r["month"]]." ",unslash($r["year"]); ?></td>
                         <td><?php echo curr_format(unslash($r["amount"])); ?></td>
                         <td class="text-center">
@@ -122,14 +125,14 @@ if($employee_id!=""){
                         </select>
                         <input type="button" name="apply" value="Apply" id="apply_bulk_action" class="btn btn-light" title="Apply Action"  />
                     </td>
-                    <td colspan="4" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "salary", $sql, $pageNum)?></td>
+                    <td colspan="3" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "salary", $sql, $pageNum)?></td>
                 </tr>
                 <?php	
             }
             else{	
                 ?>
                 <tr>
-                    <td colspan="9"  class="no-record">No Result Found</td>
+                    <td colspan="8"  class="no-record">No Result Found</td>
                 </tr>
                 <?php
             }

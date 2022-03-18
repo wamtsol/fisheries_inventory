@@ -6,7 +6,7 @@ if(isset($_POST["salary_add"])){
 	if(empty($employee_id))
 		$err="Fields with (*) are Mandatory.<br />";
 	if($err==""){
-		$sql="INSERT INTO salary (employee_id, month, year, datetime_added, amount) VALUES ('".slash($employee_id)."', '".slash($month)."', '".slash($year)."', '".slash(datetime_dbconvert($datetime_added))."', '".slash($amount)."')";
+		$sql="INSERT INTO salary (employee_id, project_id, month, year, datetime_added, amount) VALUES ('".slash($employee_id)."', '".slash($project_id)."', '".slash($month)."', '".slash($year)."', '".slash(datetime_dbconvert($datetime_added))."', '".slash($amount)."')";
 		doquery($sql,$dblink);
 		unset($_SESSION["salary_manage"]["add"]);
 		header('Location: salary_manage.php?tab=list&msg='.url_encode("Sucessfully Added"));

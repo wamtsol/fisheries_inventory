@@ -5,10 +5,10 @@ if(isset($_SESSION["supplier_payment_manage"]["add"])){
 }
 else{
 	$supplier_id="";
-	$datetime_added=date("d/m/Y H:i A");
+	$datetime=date("d/m/Y H:i A");
 	$amount="";
 	$account_id="";
-	$details = "";
+	$details="";
 }
 ?>
 <div class="page-header">
@@ -30,18 +30,18 @@ else{
                 <label class="form-label" for="supplier_id">Supplier Name <span class="manadatory">*</span></label>
             </div>
             <div class="col-sm-10">
-                <select name="supplier_id" title="Choose Option">
-                    <option value="0">Select Supplier</option>
+                <select name="supplier_id" id="supplier_id" class="margin-btm-5 select_supplier">
+                	<option value="">Select Supplier</option>
                     <?php
-                    $res=doquery("select * from supplier where status=1 order by id", $dblink);
-                    if(numrows($res)>0){
-                        while($rec=dofetch($res)){
-                        ?>
-                        <option value="<?php echo $rec["id"]?>"<?php echo($supplier_id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["supplier_name"]); ?></option>
-                     <?php			
-                        }			
-                    }
-                    ?>
+                    $rs = doquery( "select * from supplier where status=1 order by supplier_name", $dblink );
+					if( numrows( $rs ) > 0 ) {
+						while( $r = dofetch( $rs ) ) {
+							?>
+							<option value="<?php echo $r[ "id" ]?>" data-supplier_name="<?php echo htmlspecialchars(unslash($r[ "supplier_name" ]))?>" data-phone="<?php echo htmlspecialchars(unslash($r[ "phone" ]))?>" data-address="<?php echo htmlspecialchars(unslash($r[ "address" ]))?>"><?php echo unslash($r[ "supplier_name" ])?> ( <?php echo unslash($r[ "id" ])?> )</option>
+							<?php
+						}
+					}
+					?>
                 </select>
             </div>
         </div>
@@ -49,10 +49,10 @@ else{
   	<div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">
-                <label class="form-label" for="datetime_added">Datetime</label>
+                <label class="form-label" for="datetime">Datetime</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" title="Enter datetime" value="<?php echo $datetime_added; ?>" name="datetime_added" id="datetime_added" class="form-control date-timepicker" >
+                <input type="text" title="Enter datetime" value="<?php echo $datetime; ?>" name="datetime" id="datetime" class="form-control date-timepicker" >
             </div>
         </div>
   	</div>
@@ -72,14 +72,14 @@ else{
                 <label class="form-label" for="account_id">Paid By </label>
             </div>
             <div class="col-sm-10">
-                <select name="account_id" id="account_id" title="Choose Option" class="select_search">
-                    <option value="">Select Account</option>
+                <select name="account_id" title="Choose Option">
+                    <option value="0">Select Account</option>
                     <?php
-                    $res=doquery("select * from account where status=1 order by id", $dblink);
+                    $res=doquery("select * from account where status=1 order by title", $dblink);
                     if(numrows($res)>0){
                         while($rec=dofetch($res)){
                         ?>
-                        <option value="<?php echo $rec["id"]?>"<?php echo($rec["is_petty_cash"] == 1)?"selected":"";?>><?php echo unslash($rec["title"]); ?></option>
+                        <option value="<?php echo $rec["id"]?>"<?php echo($account_id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["title"]); ?></option>
                      	<?php			
                         }			
                     }
@@ -89,25 +89,15 @@ else{
         </div>
   	</div>
     <div class="form-group">
-    	<div class="row">
-            <div class="col-sm-2 control-label">
-                <label class="form-label" for="details">Details</label>
+        <div class="row">
+        	<div class="col-sm-2 control-label">
+            	<label class="form-label" for="details">Details </label>
             </div>
             <div class="col-sm-10">
-                <textarea title="Enter details" name="details" id="details" class="form-control"><?php echo $details?></textarea>
+                 <textarea title="Enter Details" value="" name="details" id="details" class="form-control" /><?php echo $details; ?></textarea>
             </div>
         </div>
-  	</div>
-    <div class="form-group">
-    	<div class="row">
-            <div class="col-sm-2 control-label">
-                <label class="form-label" for="payment_image">Payment Image</label>
-            </div>
-            <div class="col-sm-10">
-                <input type="file" title="Select Image" name="payment_image" id="payment_image" class="form-control">
-            </div>
-        </div>
-  	</div>
+    </div>
   	<div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">

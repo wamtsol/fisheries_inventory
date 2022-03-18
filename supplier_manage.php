@@ -4,7 +4,7 @@ include("include/utility.php");
 include("include/session.php");
 include("include/paging.php");
 define("APP_START", 1);
-$tab_array=array("list", "add", "edit", "status", "delete", "report", "bulk_action", "report_debit_credit", "report_debit_credit_print");
+$tab_array=array("list", "add", "edit", "status", "delete", "report", "bulk_action", "print");
 if(isset($_REQUEST["tab"]) && in_array($_REQUEST["tab"], $tab_array)){
 	$tab=$_REQUEST["tab"];
 }
@@ -25,17 +25,11 @@ switch($tab){
 	case 'status':
 		include("modules/supplier/status_do.php");
 	break;
-	case 'report':
-		include("modules/supplier/report_do.php");
-	break;
 	case 'bulk_action':
 		include("modules/supplier/bulkactions.php");
 	break;
-	case 'report_debit_credit':
-		include("modules/supplier/report_debit_credit_do.php");
-	break;
-	case 'report_debit_credit_print':
-		include("modules/supplier/report_debit_credit_print.php");
+	case 'print':
+		include("modules/supplier/print_do.php");
 	break;
 }
 ?>
@@ -55,9 +49,6 @@ switch($tab){
 			break;
 			case 'report':
 				include("modules/supplier/report.php");
-			break;
-			case 'report_debit_credit':
-				include("modules/supplier/report_debit_credit.php");
 			break;
 		}
       ?>

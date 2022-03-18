@@ -29,6 +29,13 @@ tr.head {
 .color4 {
   color: #f5f5f5;
 }
+table.items_col {
+  background: #fff;
+}
+table.items_col td {
+  padding: 3px;
+  font-weight: bold;
+}
 .color5 {
   color: #399bff;
 }
@@ -136,7 +143,9 @@ body {
 	padding:5px;
 	color:#089903;
 	text-align:center;
-	margin-bottom:10px;
+  margin-bottom:10px;
+  margin-left: -30px;
+    margin-right: -30px;
 	}	
 
 .err{
@@ -322,7 +331,7 @@ App Logo
 .applogo {
   width: 250px;
   height: 60px;
-  background: #ffffff;
+  background: rgba(0, 0, 0, 0.14);
   color: #fff;
   position: relative;
   padding: 19px 0 0 0px;
@@ -330,10 +339,12 @@ App Logo
   text-align: center;
 }
 .applogo .logo {
-  color: #fff;
-  font-size: 30px;
-  font-weight: bold;
-  font-family: 'Montserrat', sans-serif;
+  	color: #fff;
+	font-size: 16px;
+	font-weight: bold;
+	font-family: 'Montserrat', sans-serif;
+	line-height: 24px;
+	text-transform: uppercase;
 }
 /* =================================================================================
 Sidebar Open Button - Show or Hide Sidebar
@@ -918,7 +929,7 @@ Content
     margin-left: 250px;
     padding-left: 30px;
     padding-right: 30px;
-    padding-top: 80px;
+    padding-top: 58px;
 }
 /* =================================================================================
 FOOTER 
@@ -949,7 +960,7 @@ Page Header
 .content .page-header {
     background: hsl(0, 0%, 100%) none repeat scroll 0 0;
     border-bottom: medium none;
-    margin: -20px -30px 20px;
+    margin: -10px -30px 20px;
     padding: 20px;
     position: relative;
 }
@@ -957,11 +968,11 @@ Page Header
   padding: 0;
   margin: 0;
   font-family: 'Montserrat', sans-serif;
-  font-size: 20px;
+  font-size: 17px;
   line-height: normal;
   font-weight: normal;
   color: #37363e;
-  padding-bottom: 6px;
+  padding-bottom: 3px;
 }
 .page-header .right {
   position: absolute;
@@ -1797,7 +1808,7 @@ Invoice
 Login Pages
 ================================================================================= */
 .login-form {
-  width: 360px;
+  max-width: 360px;
   padding-top: 100px;
   margin: 0px auto;
   text-shadow: none;
@@ -1808,7 +1819,11 @@ Login Pages
   border-radius: 3px;
 }
 .login-form form img {
-  margin-bottom: 18px;
+  margin-bottom: 0;
+  width: 170px;
+}
+.login-form form h1 span{
+	display:block;
 }
 .login-form form .profile {
   border-radius: 999px;
@@ -1927,8 +1942,6 @@ Top Stats
   position: relative;
   font-size: 12px;
   border-radius: 3px;
-  margin-left: -5px;
-  margin-right: -5px;
   text-shadow: none;
   padding: 12px 0;
 }
@@ -2786,6 +2799,9 @@ select {
 }
 .margin-btm-5{
 	margin-bottom:5px;
+}
+.margin-btm-10{
+	margin-bottom:10px;
 }
 .form-control:focus {
   background: #f7f7f7;
@@ -3678,7 +3694,7 @@ table td {
 .table > thead > tr > td,
 .table > tbody > tr > td,
 .table > tfoot > tr > td {
-  padding: 8px;
+  padding: 2px;
   line-height: 1.7;
 }
 .doc-grid {
@@ -4345,7 +4361,7 @@ th {
 .table {
     margin-bottom: 20px;
     max-width: 100%;
-    width: 100%;
+    width: 99%;
 }
 .table td{
 	border-top: 1px solid hsl(0, 0%, 87%);
@@ -4387,7 +4403,6 @@ th {
 .actions .btn.btn-light {
     padding: 4px 20px;
     vertical-align: top;
-    width: auto;
 }
 .actions > select {
     padding: 5px;
@@ -4467,10 +4482,10 @@ body.popup-content {
 }
 
 .logo > img {
-    width: 100px;
+    width: 175px;
 }
 .applogo {
-    padding: 0px;
+    padding:6px 6px 0;
 }
 .page-header .btn.btn-light:last-child {
 }
@@ -4559,20 +4574,19 @@ a.sorting:hover{
 .sale_item .text-center {
     line-height: 28px !important;
 }
-.topstats  .chosen-container-single .chosen-single span{
-	text-align:left;
+.purchase_item input{
+	width:100px;
 }
-.topstats .chosen-container .chosen-results li{
-	text-align:left;
+.sale_item input{
+	width:100px;
 }
-.topstats .chosen-container .chosen-results{
-	overflow:auto;
+.form-group .control-label {
+  margin-bottom: 0;
+  padding-top: 7px;
+  text-align: right;
 }
-.table input, .table .purchase_item select {
-  width: 100%;
-}
-.table .chosen-container-single .chosen-single, .table .chosen-container-single .chosen-single span{
-  white-space: inherit;
+.tble-items .panel-body.table-responsive{
+  min-height: 200px;
 }
 @media (max-width: 980px) {
 	#footer.bottom_round_corners {
@@ -4582,3 +4596,336 @@ a.sorting:hover{
 		margin-bottom:5px;
 	}
 }
+.topstats h3{
+	font-size:18px;
+}
+.sales-table,.sales-table-inner{
+	width:100%;
+	background:#fff;
+}
+.sales-table th,.sales-table td{
+	padding: 2px 5px;
+}
+.sales-table-inner td:first-child {
+    border-right: 1px solid;
+}
+.sales-table .padding-0 {
+    padding: 0;
+}
+.sales-table-inner th, .sales-table-inner td{}
+
+.stock-sales th,.stock-sales td{
+	border-color:#ccc !important;
+}
+.light-bg {
+    background: #eff7ff;
+}
+.stock-sales table{
+    background: #fefefe;
+}
+.stock-sales input[type="text"],.sales-table input[type="text"]{
+	border: medium none;
+    height: auto;
+    padding: 0px 5px;
+    width: 100%;
+}
+.stock-title {
+    font-size: 12px;
+}
+.wct-tabs-navigations > ul {
+    list-style: outside none none;
+    padding: 0;
+    margin-bottom: 0 !important;
+	cursor:pointer;
+	border-bottom:1px solid #3185DB;
+}
+.wct-tabs-navigations li{
+	background: #f4f4f4 none repeat scroll 0 0;
+    color: #576373;
+    display: block;
+    float: left;
+    line-height: 36px;
+    margin-bottom: -1px;
+    padding: 0 12px;
+}
+.wct-tabs-navigations li.active{
+   border-left: 1px solid #4c8fbd;
+    border-right: 1px solid #4c8fbd;
+    border-top: 2px solid #4c8fbd;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.wct-tab-content {
+    margin-bottom: 10px;
+}
+.select-cus{
+	margin: 0;
+    padding: 5px;
+}
+.table.sales-table th, .table.sales-table td {
+    padding: 2px 5px;
+}
+.table.sales-table th{
+	border-bottom:none;
+}
+.sales-table {
+}
+.wct-tabs-navigations li .fa.fa-remove {
+    font-size: 12px;
+    margin: 0 5px;
+}
+.wct-tabs-navigations li span {
+    vertical-align: middle;
+}
+.sales-table {
+    background: rgba(0, 0, 0, 0);
+}
+.customer_detail span {
+    display: block;
+	line-height: 20px;
+	text-transform: uppercase;
+}
+.customer_detail {
+	font-size: 12px;
+}
+.wct-tabs .color5-bg{
+	background: #399bff none repeat scroll 0 0;
+    border-bottom: 1px solid #333333;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 28px;
+	font-weight:600;
+    padding: 0 10px;
+    text-transform: uppercase;
+}
+.wct-tabs .color5-bg h4{
+	font-size: 18px;
+	margin:0;
+}
+.customer-head {
+    padding: 5px !important;
+}
+.customer_detail > span > strong {
+    display: inline-block;
+    width: 65px;
+}
+.sales-table .actions select, .sales-table .paging select{
+	height:30px;
+}
+.sales-table .btn{
+	height:30px;
+}
+.topstats.topstats-daily li{
+	margin:0;
+}
+.wct-tab-content li {
+    background: #399bff;
+    border-bottom: 1px solid #333333;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    margin: 5px 0;
+    padding: 5px 10px;
+    text-transform: uppercase;
+}
+.wct-tab-content ul {
+    list-style: outside none none;
+    margin: 15px -5px;
+    padding: 0;
+}
+.search-customer{
+	margin:0 0 10px;
+}
+.search-customer .form-control {
+    font-size: 12px;
+    padding: 5px 7px;
+    width: 100%;
+}
+.color5-bg .form-control {
+    background: rgba(0, 0, 0, 0) url("../images/search.png") no-repeat scroll left center;
+    border: medium none;
+    box-shadow: none;
+    color: #ffffff;
+    display: inline-block;
+    float: right;
+    font-size: 13px;
+    height: 24px;
+    margin: 2px 0;
+    padding: 3px 5px 3px 22px;
+    width: auto;
+}
+.color5-bg .form-control::-moz-placeholder{
+	color:#fff;
+}
+.form-salary table{
+	background:#EFF7FF;
+}
+.form-salary table th, .form-salary table td {
+    border-right: 1px solid #dddddd;
+}
+/*****changes******/
+.form-control.search-query.date-picker.date-picker-2 {
+    float: left;
+    height: 34px;
+    padding: 0 13px;
+    width: 150px;
+}
+.panel-body.table-responsive.no-scroll {
+}
+.ui-widget-header {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0 !important;
+	border:none !important;
+	border-bottom:solid 1px #CCCCCC !important;
+}
+.box-inner ul li {
+	border: medium none !important;
+    margin:8px 5px 8px 0 !important;
+}
+.ui-tabs.ui-corner-all.ui-widget.ui-widget-content {
+    border: medium none;
+}
+.ui-tabs-panel.ui-corner-bottom.ui-widget-content {
+    padding: 0;
+}
+.ui-tabs.ui-corner-all.ui-widget.ui-widget-content {
+    padding: 0;
+}
+#inner p {
+    margin: 0;
+}
+#inner p {
+    margin: 0;
+}
+#inner-2 p {
+    margin: 0;
+}
+.box-inner ul li a {
+    display: block;
+    margin: 0;
+    padding: 10px 15px !important;
+}
+.box-inner {
+    margin: 0 0 0 8px;
+    width: 96%;
+}
+.color5-bg.summary-color {
+    color: #fff;
+    padding: 2px 12px;
+	margin: 0 0 0 5px;
+	width: 99%;
+}
+.box-inner .ui-widget-header {
+    border-bottom: medium none !important;
+}
+.form-group .chosen-container {
+    margin: 0 0 10px 0;
+}
+.form-group.click-inner {
+    margin: 20px 0 0 14px;
+    width: 97%;
+}
+.click-option {
+    display: none;
+}
+.box-detail-inner {
+    margin: 0 0 0 5px;
+    width: 99%;
+}
+.fancybox-frame{
+	display:none;
+}
+.fancybox-btn {
+    padding: 30px 0;
+}
+h2.total-heading {
+    background: #399bff;
+	color: #fff;
+    padding: 0 15px;
+    line-height: 33px;
+    font-size: 19px;
+}
+.fancybox-frame .table{
+	width:99%;
+}
+.fancybox-frame .table td,#total-expense .table th{
+	padding: 8px;
+    line-height: 1.7;
+	border: 1px solid #ddd;
+}
+.expense-form label {
+    display: block;
+}
+.expense-form select {
+    width: 100%;
+}
+.expense-form textarea {
+    vertical-align: top;
+    height: 31px;
+}
+.topstats.search_filter{
+ 	overflow:visible !important;
+}
+@media only screen and (max-width: 991px) {
+.color5-bg.summary-color {
+	width: 98%;
+	margin: 0 0 0 2px;
+}
+#inner {
+	margin: 0 0 0 8px;
+}
+#inner-2 {
+	margin: 0 0 0 8px;
+}
+#inner-3 {
+	margin: 0 0 0 8px;
+}
+.form-group.click-inner {
+	margin: 0px 0 0 3px;
+}
+}
+@media only screen and (max-width: 890px) {
+.customer_detail {
+    overflow-y: scroll;
+    width: 98%;
+}
+}
+.user-tabs-inline ul{
+}
+.user-tabs ul,.user-tabs-inline ul{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+.user-tabs li a {
+    background: #fff;
+    margin: 10px 0;
+    padding: 5px;
+    border-bottom: 1px solid #999;
+    display: block;
+	font-size:14px;
+}
+.user-tabs-inline li{
+	display:inline-block;
+}
+.user-tabs-inline li a{
+	background: #fff;
+	margin: 10px 5px;
+	padding: 5px 20px;
+	border-top: 1px solid #999;
+	display: inline-block;
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;
+}
+.salary-btn{
+	margin:10px 0;
+}
+.salary-btn a{
+	margin-left:10px;
+}
+.popup-content .content .page-header{ margin:0 -30px 20px;}
