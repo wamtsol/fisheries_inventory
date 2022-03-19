@@ -58,7 +58,9 @@ if(!defined("APP_START")) die("No Direct Access");
             $rs=show_page($rows, $pageNum, $sql);
             if(numrows($rs)>0){
                 $sn=1;
-                while($r=dofetch($rs)){             
+                while($r=dofetch($rs)){       
+                    $supply_item = dofetch(doquery("select sum(quantity) as quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
+                    $placement_item = dofetch(doquery("select sum(quantity) as quantity from placement_item where item_id = '".$r["id"]."'", $dblink));      
                     ?>
                     <tr>
                         <td class="text-center"><?php echo $sn;?></td>
@@ -71,22 +73,16 @@ if(!defined("APP_START")) die("No Direct Access");
                         </td>
                         <td>
                             <?php
-                            $supply_item = dofetch(doquery("select sum(quantity) as quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
-                            $placement_item = dofetch(doquery("select sum(quantity) as quantity from placement_item where item_id = '".$r["id"]."'", $dblink));
-                            echo $supply_item["quantity"] - $placement_item["quantity"];
+                            echo $supply_item["quantity"];
                             ?>
                         </td>
                         <td>
                             <?php
-                            $supply_item = dofetch(doquery("select sum(quantity) as quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
-                            $placement_item = dofetch(doquery("select sum(quantity) as quantity from placement_item where item_id = '".$r["id"]."'", $dblink));
-                            echo $supply_item["quantity"] - $placement_item["quantity"];
+                            echo $placement_item["quantity"];
                             ?>
                         </td>
                         <td>
                             <?php
-                            $supply_item = dofetch(doquery("select sum(quantity) as quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
-                            $placement_item = dofetch(doquery("select sum(quantity) as quantity from placement_item where item_id = '".$r["id"]."'", $dblink));
                             echo $supply_item["quantity"] - $placement_item["quantity"];
                             ?>
                         </td>
