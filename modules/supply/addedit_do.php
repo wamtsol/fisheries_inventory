@@ -32,6 +32,19 @@ if(isset($_POST["action"])){
 			}
 			$response = $items;
 		break;
+		case "get_vendor":
+			$rs = doquery( "select * from vendor where status = 1 order by name", $dblink );
+			$vendors = array();
+			if( numrows( $rs ) > 0 ) {
+				while( $r = dofetch( $rs ) ) {
+					$vendors[] = array(
+						"id" => $r[ "id" ],
+						"name" => unslash($r[ "name" ]),
+					);
+				}
+			}
+			$response = $vendors;
+		break;
 		case "get_supply":
 			$id = slash( $_POST[ "id" ] );
 			$rs = doquery( "select * from supply where id='".$id."'", $dblink );
@@ -42,7 +55,7 @@ if(isset($_POST["action"])){
 					"date" => date_convert( $r[ "date" ] ),
 					"location_id" => $r[ "location_id" ],
 					"note" => unslash($r[ "note" ]),
-					"vendor_name" => unslash($r[ "vendor_name" ])
+					"vendor_id" => $r[ "vendor_id" ]
 				);
 				$items = array();
 				$rs = doquery( "select * from supply_item where supply_id='".$id."' order by id", $dblink );
@@ -76,11 +89,11 @@ if(isset($_POST["action"])){
 			}
 			if( count( $err ) == 0 ) {
 				if( !empty( $supply->id ) ) {
-					doquery( "update supply set `date`='".slash(date_dbconvert(unslash($supply->date)))."', `location_id`='".slash($supply->location_id)."', `vendor_name`='".slash($supply->vendor_name)."', `note`='".slash($supply->note)."' where id='".$supply->id."'", $dblink );
+					doquery( "update supply set `date`='".slash(date_dbconvert(unslash($supply->date)))."', `location_id`='".slash($supply->location_id)."', `vendor_id`='".slash($supply->vendor_id)."', `note`='".slash($supply->note)."' where id='".$supply->id."'", $dblink );
 					$supply_id = $supply->id;
 				}
 				else {
-					doquery( "insert into supply (date, location_id, vendor_name, note) VALUES ('".slash(date_dbconvert($supply->date))."', '".slash($supply->location_id)."', '".slash($supply->vendor_name)."', '".slash($supply->note)."')", $dblink );
+					doquery( "insert into supply (date, location_id, vendor_id, note) VALUES ('".slash(date_dbconvert($supply->date))."', '".slash($supply->location_id)."', '".slash($supply->vendor_id)."', '".slash($supply->note)."')", $dblink );
 					$supply_id = inserted_id();
 				}
 				$item_ids = array();

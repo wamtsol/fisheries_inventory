@@ -7,6 +7,7 @@ else{
 	$title="";
     $type="";
     $unit="";
+    $low_stock="";
 }
 ?>
 <div class="page-header">
@@ -52,14 +53,23 @@ else{
             </div>
             <div class="col-sm-10">
                 <select name="unit" id="unit">
-                    <option value="0"<?php echo $unit=="0"?' selected="selected"':''?>>Select Unit</option>
+                    <option value=""<?php echo $unit==""?' selected="selected"':''?>>Select Unit</option>
                     <option value="1"<?php echo $unit=="1"?' selected="selected"':''?>>PKT</option>
                     <option value="2"<?php echo $unit=="2"?' selected="selected"':''?>>Nos</option>
                 </select>
             </div>
         </div>
     </div>
-
+    <div class="form-group">
+        <div class="row">
+        	<div class="col-sm-2 control-label">
+            	<label class="form-label" for="low_stock">Low Stock Quantity </label>
+            </div>
+            <div class="col-sm-10">
+                <input type="text" title="Enter Low Stock" value="<?php echo $low_stock; ?>" name="low_stock" id="low_stock" class="form-control" />
+            </div>
+        </div>
+    </div>
     <div class="form-group">
     	<div class="row">
             <div class="col-sm-2 control-label">

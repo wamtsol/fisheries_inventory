@@ -45,6 +45,37 @@ if(isset($_POST["action"])){
 			}
 			$response = $trades;
 		break;
+		case "get_purchase_items":
+			$items = array();
+			if( !empty( $_POST[ "id" ] ) ) {
+				$rs = doquery( "select item_id, quantity from placement_item where placement_id = '".slash( $_POST[ "id" ] )."'", $dblink );
+				if( numrows( $rs ) > 0 ) {
+					while( $r = dofetch( $rs ) ){
+						$items[ $r[ "item_id" ] ] = $r[ "quantity" ];
+					}
+				}
+			}
+			$rs = doquery( "SELECT a.*, b.title, b.id as itemID FROM `supply_item` a left join item b on a.item_id = b.id where b.status=1", $dblink );
+			$purchase_items = array();
+			if( numrows( $rs ) > 0 ) {
+				while( $r = dofetch( $rs ) ) {
+					$item_name = unslash($r[ "title" ]);
+					$quantity = $r[ "quantity" ];
+					if( isset( $items[ $r[ "id" ] ] ) ){
+						// $quantity -= $items[ $r[ "id" ] ];
+					}
+					if( $quantity > 0 ) {
+						$purchase_items[] = array(
+							"id" => $r[ "id" ],
+							"item_id" => $r[ "itemID" ],
+							"item_name" => $item_name,
+							"quantity" => $quantity,
+						);
+					}
+				}
+			}
+			$response = $purchase_items;
+		break;
 		case "get_placement":
 			$id = slash( $_POST[ "id" ] );
 			$rs = doquery( "select * from placement where id='".$id."'", $dblink );

@@ -19,18 +19,31 @@ if(!defined("APP_START")) die("No Direct Access");
 	<li class="col-xs-12 col-lg-12 col-sm-12">
         <div>
         	<form class="form-horizontal" action="" method="get">
-            	<span class="col-sm-1 text-to">From</span>
                 <div class="col-sm-2">
-                    <input type="text" title="Enter Date From" name="date_from" id="date_from" placeholder="" class="form-control date-picker"  value="<?php echo $date_from?>" autocomplete="off">
+                    <input type="text" title="Enter Date From" name="date_from" id="date_from" placeholder="From" class="form-control date-picker"  value="<?php echo $date_from?>" autocomplete="off">
                 </div>
-                <span class="col-sm-1 text-to">To</span>
                 <div class="col-sm-2">
-                    <input type="text" title="Enter Date To" name="date_to" id="date_to" placeholder="" class="form-control date-picker" value="<?php echo $date_to?>" autocomplete="off">
+                    <input type="text" title="Enter Date To" name="date_to" id="date_to" placeholder="To" class="form-control date-picker" value="<?php echo $date_to?>" autocomplete="off">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
+                	<select name="item_id" id="item_id" class="custom_select">
+                        <option value=""<?php echo ($item_id=="")? " selected":"";?>>Select Item</option>
+                        <?php
+							$res=doquery("select * from item where status = 1 order by title",$dblink);
+							if(numrows($res)>=0){
+								while($rec=dofetch($res)){
+								?>
+								<option value="<?php echo $rec["id"]?>" <?php echo($item_id==$rec["id"])?"selected":"";?>><?php echo unslash($rec["title"])?></option>
+								<?php
+								}
+							}	
+                        ?>
+                    </select>
+                </div>
+                <div class="col-sm-2">
                   <input type="text" title="Enter String" value="<?php echo $q;?>" name="q" id="search" class="form-control" >  
                 </div>
-                <div class="col-sm-3 text-left">
+                <div class="col-sm-2 text-left">
                     <input type="button" class="btn btn-danger btn-l reset_search" value="Reset" alt="Reset Record" title="Reset Record" />
                     <input type="submit" class="btn btn-default btn-l" value="Search" alt="Search Record" title="Search Record" />
                 </div>
@@ -85,7 +98,7 @@ if(!defined("APP_START")) die("No Direct Access");
                         <td class="text-center"><?php echo $r["id"]?></td>
                         <td><?php echo date_convert($r["date"]); ?></td>
                         <td><?php echo get_field($r["location_id"], "location", "title"); ?></td>
-                        <td><?php echo unslash($r["vendor_name"]); ?></td>
+                        <td><?php echo get_field($r["vendor_id"], "vendor", "name"); ?></td>
                         <td colspan="2">
                             <?php 
                             $placement_items = doquery("select * from supply_item where supply_id = '".$r["id"]."'", $dblink);

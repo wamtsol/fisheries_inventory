@@ -4,6 +4,8 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
 		$scope.locations = [];
 		$scope.trades = [];
 		$scope.errors = [];
+		$scope.item_id = '';
+		$scope.purchase_items = [];
 		$scope.processing = false;
 		$scope.placement_id = 0;
 		$scope.placement = {
@@ -34,6 +36,9 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
 			});
 			$scope.wctAJAX( {action: 'get_trade'}, function( response ){
 				$scope.trades = response;
+			});
+			$scope.wctAJAX( {action: 'get_purchase_items', id: $scope.placement_id}, function( response ){
+				$scope.purchase_items = response;
 			});
 			if( $scope.placement_id > 0 ) {
 				$scope.wctAJAX( {action: 'get_placement', id: $scope.placement_id}, function( response ){
@@ -72,12 +77,64 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
 			}
 			$scope.update_grand_total();
 		}
+		$scope.addItemM = function( e ) {
+			if( e.which == 13 && $scope.item_id != '' ) {
+				$scope.addItem( $scope.item_id, 1 );
+			}
+		}
+		$scope.addItem = function( item_id, qty ){
+			item_id = ""+parseInt( item_id );
+			if( $scope.placement.items.length == 1 && $scope.placement.items[ 0 ].item_id == '' ) {
+				$scope.placement.items[ 0 ].item_id = item_id;
+				$scope.placement.items[ 0 ].quantity = 1;
+				$scope.update_item( 0 );
+			}
+			else{
+				$items = $filter('filter')( $scope.placement.items, {item_id: item_id}, 1 );
+				if( $items.length == 0 ) {
+					$scope.placement.items.splice(0, 0, angular.copy( $scope.item ) );
+					$scope.placement.items[ 0 ].item_id = item_id;
+					$scope.placement.items[ 0 ].quantity = 1;
+					$scope.update_item( 0 );
+				}
+				else {
+					for( var i = 0; i < $scope.placement.items.length; i++ ){
+						if( $scope.placement.items[ i ].item_id == item_id ) {
+							$scope.placement.items[ i ].quantity += 1;
+							$scope.update_item( i );
+							//return;
+						}
+					}	
+				}
+			}
+			$scope.$apply();
+		}
 		$scope.update_grand_total = function(){
             total = 0;
             for( i = 0; i < $scope.placement.items.length; i++ ) {
                 total += parseFloat( $scope.placement.items[ i ].quantity );
 			}
 			return total;
+        }
+		$scope.update_item = function(position){
+            var id = $scope.placement.items[ position ].item_id
+			console.log(id);
+            var item = $filter('filter')($scope.purchase_items, {item_id: id}, true );
+			console.log(item);
+            if( item.length > 0 ) {
+                item = item[1];
+                $scope.placement.items[ position ].item_id = item.id;
+            }
+        }
+		$scope.get_available_quantity = function( position ){
+            var id = $scope.placement.items[ position ].item_id
+            var item = $filter('filter')($scope.purchase_items, {item_id: id}, true );
+            if( item.length > 0 ) {
+                return item[0].quantity;
+            }
+			else{
+				return 0;
+			}
         }
 		$scope.wctAJAX = function( wctData, wctCallback ) {
 			wctData.tab = 'addedit';

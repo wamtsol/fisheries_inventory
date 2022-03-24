@@ -75,7 +75,7 @@ body{
                     	<td style="text-align:center"><?php echo $sn++?></td>
                         <td style="text-align:left;"><?php echo datetime_convert($r["date"]); ?></td>
                         <td><?php echo get_field($r["location_id"], "location", "title"); ?></td>
-                        <td><?php echo unslash($r["vendor_name"]); ?></td>
+                        <td><?php echo get_field($r["vendor_id"], "vendor", "name"); ?></td>
                         <td colspan="2">
                             <?php 
                             $placement_items = doquery("select * from supply_item where supply_id = '".$r["id"]."'", $dblink);

@@ -20,10 +20,12 @@ if(isset($_GET["date_from"])){
 	$date_from=slash($_GET["date_from"]);
 	$_SESSION["supply"]["list"]["date_from"]=$date_from;
 }
-if(isset($_SESSION["supply"]["list"]["date_from"]))
+if(isset($_SESSION["supply"]["list"]["date_from"])){
 	$date_from=$_SESSION["supply"]["list"]["date_from"];
-else
+}
+else{
 	$date_from="";
+}
 if($date_from != ""){
 	$extra.=" and date>='".date("Y/m/d H:i:s", strtotime(date_dbconvert($date_from)))."'";
 	$is_search=true;
@@ -32,10 +34,12 @@ if(isset($_GET["date_to"])){
 	$date_to=slash($_GET["date_to"]);
 	$_SESSION["supply"]["list"]["date_to"]=$date_to;
 }
-if(isset($_SESSION["supply"]["list"]["date_to"]))
+if(isset($_SESSION["supply"]["list"]["date_to"])){
 	$date_to=$_SESSION["supply"]["list"]["date_to"];
-else
+}
+else{
 	$date_to="";
+}
 if($date_to != ""){
 	$extra.=" and date<'".date("Y/m/d", strtotime(date_dbconvert($date_to))+3600*24)."'";
 	$is_search=true;
@@ -44,12 +48,28 @@ if(isset($_GET["q"])){
 	$q=slash($_GET["q"]);
 	$_SESSION["supply"]["list"]["q"]=$q;
 }
-if(isset($_SESSION["supply"]["list"]["q"]))
+if(isset($_SESSION["supply"]["list"]["q"])){
 	$q=$_SESSION["supply"]["list"]["q"];
-else
+}
+else{
 	$q="";
+}
 if(!empty($q)){
-	$extra.=" and (vendor_name like '%".$q."%')";
+	$extra.=" and (id like '%".$q."%')";
+	$is_search=true;
+}
+if(isset($_GET["item_id"])){
+	$item_id=slash($_GET["item_id"]);
+	$_SESSION["supply"]["list"]["item_id"]=$item_id;
+}
+if(isset($_SESSION["supply"]["list"]["item_id"])){
+	$item_id=$_SESSION["supply"]["list"]["item_id"];
+}
+else{
+	$item_id="";
+}
+if($item_id!=""){
+	$extra.=" and b.item_id='".$item_id."'";
 	$is_search=true;
 }
 $order_by = "date";
@@ -67,7 +87,7 @@ if( isset( $_SESSION["supply"]["list"]["order"] ) ){
 	$order = $_SESSION["supply"]["list"]["order"];
 }
 $orderby = $order_by." ".$order;
-$sql="select * from supply where 1 $extra order by $orderby";
+$sql="select a.* from supply a inner join supply_item b on a.id = b.supply_id where 1 $extra group by a.id order by $orderby";
 switch($tab){
 	case 'addedit':
 		include("modules/supply/addedit_do.php");

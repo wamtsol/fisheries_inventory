@@ -65,7 +65,7 @@ if(isset($_GET["id"]) && !empty($_GET["id"])){
 				<div class="wrapper">
 					<span class="barcode"><img src="barcode.php?text=<?php echo $barcode?>&size=30" /></span>
 					<span class="number"><?php echo $barcode?></span>
-					<!-- <span class="item_name"><?php echo $r[ "id" ]?></span> -->
+					<span class="item_name"><?php echo unslash($r[ "title" ])?></span>
 					<!-- <span class="item_name price">Price: <?php echo curr_format( $r[ "sale_price" ] )?></span> -->
 				</div>
 				<?php

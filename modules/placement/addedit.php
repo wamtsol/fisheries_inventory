@@ -83,7 +83,7 @@ else {
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">S.no</th>
-                                <th>Item</th>
+                                <th>Item <input type="text" placeholder="Item ID" style="width: 100px; float:right" ng-model="item_id" ng-keypress="addItemM($event)" /></th>
                                 <th width="12%" class="text-right">Stock Available</th>
                                 <th width="8%" class="text-right">Quantity</th>
                                 <th width="8%" class="text-right">Quantity Issued</th>
@@ -94,10 +94,12 @@ else {
                             <tr ng-repeat="item in placement.items">
                                 <td class="text-center serial_number">{{ $index+1 }}</td>
                                 <td>
-                                    <select title="Choose Option" ng-model="placement.items[ $index ].item_id" chosen convert-to-number="" ng-options="item.id as item.title for item in items">
+                                    <select title="Choose Option" ng-model="placement.items[ $index ].item_id" chosen ng-change='update_item($index)'>
+                                        <option value="">Select Items</option>
+                                        	<option ng-repeat="item in items" value="{{ item.id }}">{{ item.title }}</option>
                                     </select>
                                 </td>
-                                <td></td>
+                                <td>{{ get_available_quantity( $index ) }}</td>
                                 <td class="text-right"><input type="text" ng-model="placement.items[ $index ].quantity" ng-change='update_grand_total( $index )' /></td>
                                 <td class="text-right"><input type="text" ng-model="placement.items[ $index ].quantity_issued" ng-change='update_grand_total( $index )' /></td>
                                 <td class="text-center"><a href="" ng-click="add( $index )">Add</a> - <a href="" ng-click="remove( $index )">Delete</a></td>

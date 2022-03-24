@@ -2,6 +2,7 @@ angular.module('supply', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angular
 	function ($scope, $http, $interval, $filter) {
 		$scope.items = [];
 		$scope.locations = [];
+		$scope.vendors = [];
 		$scope.errors = [];
 		$scope.processing = false;
 		$scope.supply_id = 0;
@@ -9,7 +10,7 @@ angular.module('supply', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angular
 			id: 0,
 			date: '',
 			location_id: 0,
-			vendor_name: '',
+			vendor_id: 0,
 			items: [],
 			note: ''
 		};
@@ -28,6 +29,9 @@ angular.module('supply', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angular
 			});
 			$scope.wctAJAX( {action: 'get_item'}, function( response ){
 				$scope.items = response;
+			});
+			$scope.wctAJAX( {action: 'get_vendor'}, function( response ){
+				$scope.vendors = response;
 			});
 			if( $scope.supply_id > 0 ) {
 				$scope.wctAJAX( {action: 'get_supply', id: $scope.supply_id}, function( response ){

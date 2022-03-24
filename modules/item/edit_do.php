@@ -6,7 +6,7 @@ if(isset($_POST["item_edit"])){
 	if(empty($title))
 		$err="Fields with (*) are Mandatory.<br />";
 	if($err==""){
-		$sql="Update item set `title`='".slash($title)."', `type`='".slash($type)."', `unit`='".slash($unit)."'"." where id='".$id."'";
+		$sql="Update item set `title`='".slash($title)."', `type`='".slash($type)."', `unit`='".slash($unit)."', `low_stock`='".slash($low_stock)."'"." where id='".$id."'";
 		doquery($sql,$dblink);
 		unset($_SESSION["item_manage"]["edit"]);
 		header('Location: item_manage.php?tab=list&msg='.url_encode("Successfully Updated"));

@@ -6,7 +6,7 @@ if(isset($_POST["item_add"])){
 	if(empty($title))
 		$err="Fields with (*) are Mandatory.<br />";
 	if($err==""){
-		$sql="INSERT INTO item (title, type, unit) VALUES ('".slash($title)."', '".slash($type)."', '".slash($unit)."')";
+		$sql="INSERT INTO item (title, type, unit, low_stock) VALUES ('".slash($title)."', '".slash($type)."', '".slash($unit)."', '".slash($low_stock)."')";
 		doquery($sql,$dblink);
 		unset($_SESSION["item_manage"]["add"]);
 		header('Location: item_manage.php?tab=list&msg='.url_encode("Successfully Added"));

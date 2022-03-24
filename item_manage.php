@@ -6,7 +6,7 @@ include("include/paging.php");
 define("APP_START", 1);
 $filename = 'item_manage.php';
 include("include/admin_type_access.php");
-$tab_array=array("list", "add", "edit", "status", "delete", "bulk_action", "print");
+$tab_array=array("list", "add", "edit", "status", "delete", "bulk_action", "print", "report");
 if(isset($_REQUEST["tab"]) && in_array($_REQUEST["tab"], $tab_array)){
 	$tab=$_REQUEST["tab"];
 }
@@ -43,7 +43,7 @@ if($type!=""){
 	$extra.=" and type='".$type."'";
 	$is_search=true;
 }
-$sql="select * from item where 1 $extra order by title";
+$sql="select id, title, unit, type, status, (select sum(quantity) from supply_item where item_id = item.id) as purchased, (select sum(quantity_issued) from placement_item where item_id = item.id) as issued from item where 1 $extra order by title";
 switch($tab){
 	case 'add':
 		include("modules/item/add_do.php");
@@ -62,6 +62,9 @@ switch($tab){
 	break;
 	case 'print':
 		include("modules/item/print.php");
+	break;
+	case 'report':
+		include("modules/item/report.php");
 	break;
 }
 ?>

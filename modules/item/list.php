@@ -12,6 +12,7 @@ if(!defined("APP_START")) die("No Direct Access");
     	<div class="btn-group" role="group" aria-label="..."> 
         	<a href="item_manage.php?tab=add" class="btn btn-light editproject">Add New Item</a> 
             <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a> 
+            <a class="btn print-btn" href="item_manage.php?tab=report"><i class="fa fa-print" aria-hidden="true"></i></a>
     	</div> 
     </div> 
 </div>
@@ -45,7 +46,10 @@ if(!defined("APP_START")) die("No Direct Access");
                 <th class="text-center" width="5%"><div class="checkbox checkbox-primary">
                     <input type="checkbox" id="select_all" value="0" title="Select All Records">
                     <label for="select_all"></label></div></th>
+                <th width="5%">ID</th>
                 <th>Title</th>
+                <th width="10%">Type</th>
+                <th width="10%">Unit</th>
                 <th width="15%">Quantity Purchased</th>
                 <th width="12%">Quantity Issued</th>
                 <th width="12%">Balance Stock</th>
@@ -59,8 +63,8 @@ if(!defined("APP_START")) die("No Direct Access");
             if(numrows($rs)>0){
                 $sn=1;
                 while($r=dofetch($rs)){       
-                    $supply_item = dofetch(doquery("select sum(quantity) as quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
-                    $placement_item = dofetch(doquery("select sum(quantity) as quantity from placement_item where item_id = '".$r["id"]."'", $dblink));      
+                    // $supply_item = dofetch(doquery("select sum(quantity) as quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
+                    // $placement_item = dofetch(doquery("select sum(quantity) as quantity from placement_item where item_id = '".$r["id"]."'", $dblink));      
                     ?>
                     <tr>
                         <td class="text-center"><?php echo $sn;?></td>
@@ -68,22 +72,49 @@ if(!defined("APP_START")) die("No Direct Access");
                             <input type="checkbox" name="id[]" id="<?php echo "rec_".$sn?>"  value="<?php echo $r["id"]?>" title="Select Record" />
                             <label for="<?php echo "rec_".$sn?>"></label></div>
                         </td>
+                        <td><?php echo $r["id"];?></td>
                         <td>
                             <?php echo unslash($r["title"]); ?>
                         </td>
                         <td>
-                            <?php
-                            echo $supply_item["quantity"];
+                            <?php 
+                                if($r["type"]==1){
+                                    echo "Consumable";
+                                }
+                                elseif($r["type"]==2){
+                                    echo "Non Consumable";
+                                }
+                                else{
+                                    echo "--";
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <?php 
+                                if($r["unit"]==1){
+                                    echo "PKT";
+                                }
+                                elseif($r["unit"]==2){
+                                    echo "Nos";
+                                }
+                                else{
+                                    echo "--";
+                                }
                             ?>
                         </td>
                         <td>
                             <?php
-                            echo $placement_item["quantity"];
+                            echo $r["purchased"];
                             ?>
                         </td>
                         <td>
                             <?php
-                            echo $supply_item["quantity"] - $placement_item["quantity"];
+                            echo $r["issued"];
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                            echo $r["purchased"]-$r["issued"];
                             ?>
                         </td>
                         <td class="text-center">
@@ -113,7 +144,7 @@ if(!defined("APP_START")) die("No Direct Access");
                 }
                 ?>
                 <tr>
-                    <td colspan="4" class="actions">
+                    <td colspan="6" class="actions">
                         <select name="bulk_action" class="" id="bulk_action" title="Choose Action">
                             <option value="null">Bulk Action</option>
                             <option value="delete">Delete</option>
@@ -122,14 +153,14 @@ if(!defined("APP_START")) die("No Direct Access");
                         </select>
                         <input type="button" name="apply" value="Apply" id="apply_bulk_action" class="btn btn-light" title="Apply Action"  />
                     </td>
-                    <td colspan="4" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "item", $sql, $pageNum)?></td>
+                    <td colspan="5" class="paging" title="Paging" align="right"><?php echo pages_list($rows, "item", $sql, $pageNum)?></td>
                 </tr>
                 <?php	
             }
             else{	
                 ?>
                 <tr>
-                    <td colspan="8"  class="no-record">No Result Found</td>
+                    <td colspan="11"  class="no-record">No Result Found</td>
                 </tr>
                 <?php
             }

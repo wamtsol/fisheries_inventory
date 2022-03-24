@@ -31,17 +31,19 @@ else {
     <div class="form-group">
         <div class="row">
             <div class="col-sm-2 control-label">
-                <label class="form-label" for="date">Vendor Name </label>
+                <label class="form-label" for="vendor_id">Vendor </label>
             </div>
             <div class="col-sm-10">
-            	<input ng-model="supply.vendor_name" class="form-control" />
+                <select class="margin-btm-5" ng-model="supply.vendor_id" convert-to-number="" ng-options="vendor.id as vendor.name
+      for vendor in vendors">
+                </select>
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-sm-2 control-label">
-                <label class="form-label" for="supplier_id">Location </label>
+                <label class="form-label" for="location_id">District </label>
             </div>
             <div class="col-sm-10">
                 <select class="margin-btm-5" ng-model="supply.location_id" convert-to-number="" ng-options="location.id as location.title

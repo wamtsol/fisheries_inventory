@@ -14,93 +14,93 @@ function get_config($var){
 $admin_types = array("No","Yes");
 $account_type = array("Current Assets","Fixed Assets","Capital");
 $schedule_array = array("Monthly","Daily","Weekly","Fortnightly","Quarterly");
-function get_nextrun( $schedule, $day_number, $lastrun ){
-	global $day_name;
-	if( $schedule == 0 ) {
-		$lastrun = strtotime( "first day of this month midnight", $lastrun );
-		$str = 'next month';
-	}
-	else if( $schedule == 1 ) {
-		$lastrun = strtotime( "this midnight", $lastrun );
-		$str = 'tomorrow';
-	}
-	else if( $schedule == 2 ) {
-		$lastrun = strtotime('next Monday -1 week', strtotime('this sunday midnight', $lastrun));
-		$str = 'next week';
-	}
-	else if( $schedule == 3 ) {
-		$lastrun = strtotime( "this fortnight midnight", $lastrun );
-		$str = 'next fortnight';
-	}
-	else{
-		$lastrun = strtotime( "first day of this month midnight", $lastrun );
-		$str = '+3 month';
-	}
-	if( $day_number > 0 ) {
-		if( $day_number < 100 ) {
-			$ts = strtotime( ($schedule == 2?'':'First ').$day_name[ $day_number-1 ]." ".($schedule == 2?'':'of ').$str, $lastrun );
-		}
-		else{
-			$ts = strtotime( "+".($day_number-100)." days", strtotime( $str, $lastrun ));
-		}
-	}
-	else{
-		$ts = strtotime( $str, $lastrun );
-	}
-	return $ts;
-}
-function get_schedule( $schedule, $day_number ){
-	global $schedule_array, $day_name;
-	$schedule_text = $schedule_array[$schedule];
-	if( $day_number > 0 ) {
-		if( $day_number < 100 ) {
-			$schedule_text = 'First '.$day_name[ $day_number-1 ]." of  ".$schedule_text;	
-		}
-		else{
-			$schedule_text = "After ".($day_number-100)." day".(($day_number-100)>1?"s":"")." ".$schedule_text;
-		}
-	}
-	return $schedule_text;
-}
-function run_schedule(){
-	global $dblink;
-	$rs = doquery( "select * from scheduled_transaction where nextrun < '".time()."' and status=1", $dblink );
-	if( numrows( $rs ) > 0 ) {
-		while( $r = dofetch( $rs ) ){
-			$r[ "details" ] = str_replace( array(
-				'[date]',
-				'[day]',
-				'[month]',
-				'[year]'
-			), array(
-				date("d/m/Y"),
-				date('l'),
-				date('F'),
-				date('Y')
-			), $r[ "details" ]);
-			if( $r[ "type" ] == 0 ) {
-				$sql="INSERT INTO transaction ( project_id, account_id, reference_id, datetime_added, amount, details, added_by) VALUES ( '".$r["project_id"]."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
-				doquery($sql,$dblink);
-			}
-			else if( $r[ "type" ] == 1 ) {
-				$sql="INSERT INTO expense ( project_id, expense_category_id, account_id, datetime_added, amount, details, added_by) VALUES ( '".$r["project_id"]."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
-				doquery($sql,$dblink);
-			}
-			else if( $r[ "type" ] == 2 ) {
-				$month = date( "n", strtotime( "last month" ))-1;
-				$year = date( "Y", strtotime( "last month" ));
-				doquery( "insert into salary(employee_id, month, year, datetime_added, amount, added_by) values('".$r["account_id"]."', '".$month."','".$year."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["added_by"]."')", $dblink );
-				$salary_id = inserted_id();
-				$sql="INSERT INTO salary_payment ( salary_id, employee_id, account_id, datetime_added, amount, details, added_by) VALUES ( '".$salary_id."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
-				doquery($sql,$dblink);
-			}
-			$r[ "lastrun" ] = $r[ "nextrun" ];
-			$r[ "nextrun" ] = get_nextrun( $r[ "schedule" ], $r[ "day_number" ], $r[ "lastrun" ] );
-			doquery( "update scheduled_transaction set lastrun = '".$r[ "lastrun" ]."', nextrun = '".$r[ "nextrun" ]."' where id = '".$r[ "id" ]."'", $dblink );
-		}
-	}
-}
-run_schedule();
+// function get_nextrun( $schedule, $day_number, $lastrun ){
+// 	global $day_name;
+// 	if( $schedule == 0 ) {
+// 		$lastrun = strtotime( "first day of this month midnight", $lastrun );
+// 		$str = 'next month';
+// 	}
+// 	else if( $schedule == 1 ) {
+// 		$lastrun = strtotime( "this midnight", $lastrun );
+// 		$str = 'tomorrow';
+// 	}
+// 	else if( $schedule == 2 ) {
+// 		$lastrun = strtotime('next Monday -1 week', strtotime('this sunday midnight', $lastrun));
+// 		$str = 'next week';
+// 	}
+// 	else if( $schedule == 3 ) {
+// 		$lastrun = strtotime( "this fortnight midnight", $lastrun );
+// 		$str = 'next fortnight';
+// 	}
+// 	else{
+// 		$lastrun = strtotime( "first day of this month midnight", $lastrun );
+// 		$str = '+3 month';
+// 	}
+// 	if( $day_number > 0 ) {
+// 		if( $day_number < 100 ) {
+// 			$ts = strtotime( ($schedule == 2?'':'First ').$day_name[ $day_number-1 ]." ".($schedule == 2?'':'of ').$str, $lastrun );
+// 		}
+// 		else{
+// 			$ts = strtotime( "+".($day_number-100)." days", strtotime( $str, $lastrun ));
+// 		}
+// 	}
+// 	else{
+// 		$ts = strtotime( $str, $lastrun );
+// 	}
+// 	return $ts;
+// }
+// function get_schedule( $schedule, $day_number ){
+// 	global $schedule_array, $day_name;
+// 	$schedule_text = $schedule_array[$schedule];
+// 	if( $day_number > 0 ) {
+// 		if( $day_number < 100 ) {
+// 			$schedule_text = 'First '.$day_name[ $day_number-1 ]." of  ".$schedule_text;	
+// 		}
+// 		else{
+// 			$schedule_text = "After ".($day_number-100)." day".(($day_number-100)>1?"s":"")." ".$schedule_text;
+// 		}
+// 	}
+// 	return $schedule_text;
+// }
+// function run_schedule(){
+// 	global $dblink;
+// 	$rs = doquery( "select * from scheduled_transaction where nextrun < '".time()."' and status=1", $dblink );
+// 	if( numrows( $rs ) > 0 ) {
+// 		while( $r = dofetch( $rs ) ){
+// 			$r[ "details" ] = str_replace( array(
+// 				'[date]',
+// 				'[day]',
+// 				'[month]',
+// 				'[year]'
+// 			), array(
+// 				date("d/m/Y"),
+// 				date('l'),
+// 				date('F'),
+// 				date('Y')
+// 			), $r[ "details" ]);
+// 			if( $r[ "type" ] == 0 ) {
+// 				$sql="INSERT INTO transaction ( project_id, account_id, reference_id, datetime_added, amount, details, added_by) VALUES ( '".$r["project_id"]."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
+// 				doquery($sql,$dblink);
+// 			}
+// 			else if( $r[ "type" ] == 1 ) {
+// 				$sql="INSERT INTO expense ( project_id, expense_category_id, account_id, datetime_added, amount, details, added_by) VALUES ( '".$r["project_id"]."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
+// 				doquery($sql,$dblink);
+// 			}
+// 			else if( $r[ "type" ] == 2 ) {
+// 				$month = date( "n", strtotime( "last month" ))-1;
+// 				$year = date( "Y", strtotime( "last month" ));
+// 				doquery( "insert into salary(employee_id, month, year, datetime_added, amount, added_by) values('".$r["account_id"]."', '".$month."','".$year."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["added_by"]."')", $dblink );
+// 				$salary_id = inserted_id();
+// 				$sql="INSERT INTO salary_payment ( salary_id, employee_id, account_id, datetime_added, amount, details, added_by) VALUES ( '".$salary_id."', '".$r["account_id"]."','".$r["reference_id"]."','".date("Y-m-d H:i:s")."','".$r[ "amount" ]."','".$r["details"]."','".$r["added_by"]."')";
+// 				doquery($sql,$dblink);
+// 			}
+// 			$r[ "lastrun" ] = $r[ "nextrun" ];
+// 			$r[ "nextrun" ] = get_nextrun( $r[ "schedule" ], $r[ "day_number" ], $r[ "lastrun" ] );
+// 			doquery( "update scheduled_transaction set lastrun = '".$r[ "lastrun" ]."', nextrun = '".$r[ "nextrun" ]."' where id = '".$r[ "id" ]."'", $dblink );
+// 		}
+// 	}
+// }
+// run_schedule();
 $admin_email=get_config("admin_email");
 $site_title=get_config("site_title");
 $site_url=get_config("site_url");
