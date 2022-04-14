@@ -331,7 +331,7 @@ App Logo
 .applogo {
   width: 250px;
   height: 60px;
-  background: rgba(0, 0, 0, 0.14);
+  background: #fff;
   color: #fff;
   position: relative;
   padding: 19px 0 0 0px;
@@ -961,7 +961,7 @@ Page Header
     background: hsl(0, 0%, 100%) none repeat scroll 0 0;
     border-bottom: medium none;
     margin: -10px -30px 20px;
-    padding: 20px;
+    padding: 35px 20px;
     position: relative;
 }
 .page-header .title {
@@ -4482,7 +4482,7 @@ body.popup-content {
 }
 
 .logo > img {
-    width: 175px;
+    width: 130px;
 }
 .applogo {
     padding:6px 6px 0;

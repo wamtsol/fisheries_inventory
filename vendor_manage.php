@@ -27,6 +27,7 @@ if(!empty($q)){
 	$extra.=" and name like '%".$q."%'";
 	$is_search=true;
 }
+$admin_type = dofetch(doquery("select * from admin_type where id = '".$_SESSION["logged_in_admin"]["admin_type_id"]."'", $dblink));
 $sql="select * from vendor where 1 $extra order by name";
 switch($tab){
 	case 'add':

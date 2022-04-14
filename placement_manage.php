@@ -101,6 +101,7 @@ if( isset( $_SESSION["placement"]["list"]["order"] ) ){
 	$order = $_SESSION["placement"]["list"]["order"];
 }
 $orderby = $order_by." ".$order;
+$admin_type = dofetch(doquery("select * from admin_type where id = '".$_SESSION["logged_in_admin"]["admin_type_id"]."'", $dblink));
 $sql="select * from placement where 1 $extra order by $orderby";
 switch($tab){
 	case 'addedit':

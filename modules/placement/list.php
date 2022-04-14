@@ -9,7 +9,7 @@ if(!defined("APP_START")) die("No Direct Access");
   	</ol>
   	<div class="right">
     	<div class="btn-group" role="group" aria-label="..."> 
-        	<a href="placement_manage.php?tab=addedit" class="btn btn-light editproject">Add New Record</a> 
+            <?php if($admin_type["can_add"]==1){?><a href="placement_manage.php?tab=addedit" class="btn btn-light editproject">Add New Record</a> <?php }?>
             <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a>
             <a class="btn print-btn" href="placement_manage.php?tab=report"><i class="fa fa-print" aria-hidden="true"></i></a>
         </div>
@@ -158,8 +158,8 @@ if(!defined("APP_START")) die("No Direct Access");
                             ?>
                         </a></td>
                         <td class="text-center">
-                            <a href="placement_manage.php?tab=addedit&id=<?php echo $r['id'];?>"><img title="Edit Record" alt="Edit" src="images/edit.png"></a>&nbsp;&nbsp;
-                            <a onclick="return confirm('Are you sure you want to delete')" href="placement_manage.php?id=<?php echo $r['id'];?>&amp;tab=delete"><img title="Delete Record" alt="Delete" src="images/delete.png"></a>
+                            <?php if($admin_type["can_edit"]==1){?><a href="placement_manage.php?tab=addedit&id=<?php echo $r['id'];?>"><img title="Edit Record" alt="Edit" src="images/edit.png"></a>&nbsp;&nbsp;<?php }?>
+                            <?php if($admin_type["can_delete"]==1){?><a onclick="return confirm('Are you sure you want to delete')" href="placement_manage.php?id=<?php echo $r['id'];?>&amp;tab=delete"><img title="Delete Record" alt="Delete" src="images/delete.png"></a><?php }?>
                         </td>
                     </tr>
                     <?php 

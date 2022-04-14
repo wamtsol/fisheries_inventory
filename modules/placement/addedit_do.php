@@ -61,8 +61,8 @@ if(isset($_POST["action"])){
 				while( $r = dofetch( $rs ) ) {
 					$item_name = unslash($r[ "title" ]);
 					$quantity = $r[ "quantity" ];
-					if( isset( $items[ $r[ "id" ] ] ) ){
-						// $quantity -= $items[ $r[ "id" ] ];
+					if( isset( $items[ $r[ "item_id" ] ] ) ){
+						$quantity -= $items[ $r[ "item_id" ] ];
 					}
 					if( $quantity > 0 ) {
 						$purchase_items[] = array(

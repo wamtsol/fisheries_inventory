@@ -27,6 +27,7 @@ if(!empty($q)){
 	$extra.=" and title like '%".$q."%'";
 	$is_search=true;
 }
+$admin_type = dofetch(doquery("select * from admin_type where id = '".$_SESSION["logged_in_admin"]["admin_type_id"]."'", $dblink));
 $sql="select * from location where 1 $extra order by title";
 switch($tab){
 	case 'add':

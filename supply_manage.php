@@ -87,6 +87,7 @@ if( isset( $_SESSION["supply"]["list"]["order"] ) ){
 	$order = $_SESSION["supply"]["list"]["order"];
 }
 $orderby = $order_by." ".$order;
+$admin_type = dofetch(doquery("select * from admin_type where id = '".$_SESSION["logged_in_admin"]["admin_type_id"]."'", $dblink));
 $sql="select a.* from supply a inner join supply_item b on a.id = b.supply_id where 1 $extra group by a.id order by $orderby";
 switch($tab){
 	case 'addedit':

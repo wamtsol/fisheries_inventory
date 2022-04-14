@@ -43,6 +43,7 @@ if($type!=""){
 	$extra.=" and type='".$type."'";
 	$is_search=true;
 }
+$admin_type = dofetch(doquery("select * from admin_type where id = '".$_SESSION["logged_in_admin"]["admin_type_id"]."'", $dblink));
 $sql="select id, title, unit, type, status, (select sum(quantity) from supply_item where item_id = item.id) as purchased, (select sum(quantity_issued) from placement_item where item_id = item.id) as issued from item where 1 $extra order by title";
 switch($tab){
 	case 'add':
