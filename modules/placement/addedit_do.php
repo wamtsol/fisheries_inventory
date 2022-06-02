@@ -55,12 +55,13 @@ if(isset($_POST["action"])){
 					}
 				}
 			}
-			$rs = doquery( "SELECT a.*, b.title, b.id as itemID FROM `supply_item` a left join item b on a.item_id = b.id where b.status=1", $dblink );
+			$rs = doquery( "SELECT a.*, b.title, b.id as itemID, c.quantity as issue_qty FROM `supply_item` a left join item b on a.item_id = b.id left join placement_item c on a.item_id = c.item_id where b.status=1", $dblink );
 			$purchase_items = array();
 			if( numrows( $rs ) > 0 ) {
 				while( $r = dofetch( $rs ) ) {
 					$item_name = unslash($r[ "title" ]);
 					$quantity = $r[ "quantity" ];
+					//print_r($items);die;
 					if( isset( $items[ $r[ "item_id" ] ] ) ){
 						$quantity -= $items[ $r[ "item_id" ] ];
 					}
@@ -69,7 +70,7 @@ if(isset($_POST["action"])){
 							"id" => $r[ "id" ],
 							"item_id" => $r[ "itemID" ],
 							"item_name" => $item_name,
-							"quantity" => $quantity,
+							"quantity" => $quantity-$r["issue_qty"],
 						);
 					}
 				}
@@ -117,6 +118,17 @@ if(isset($_POST["action"])){
 						$err[] = "Fill all the required fields on Row#".$i;
 					}
 					$i++;
+					$quantity=$item->quantity;
+					$rqq=doquery("select title, quantity from item a inner join supply_item b on a.id = b.item_id  where a.id='".$item->item_id."'", $dblink);
+					//if( numrows( $rqq ) > 0 ) {
+						$rq = dofetch( $rqq );
+						if($rq['quantity']<$quantity){
+							$err[].=unslash($rq["title"]). "is out of stock. Quantity available:" .$rq['quantity']."<br />";
+						}
+					// }
+					// else{
+					// 	$err[] = "the items have not in the purchase";
+					// }
 				}
 			}
 			if( count( $err ) == 0 ) {
