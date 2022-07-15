@@ -94,9 +94,9 @@ else {
                             <tr ng-repeat="item in placement.items">
                                 <td class="text-center serial_number">{{ $index+1 }}</td>
                                 <td>
-                                    <select title="Choose Option" ng-model="placement.items[ $index ].item_id" chosen ng-change='update_item($index)'>
+                                    <select title="Choose Option" ng-model="placement.items[ $index ].item_id" chosen data-ng-options="item.id as item.title for item in items" ng-change='update_item($index)'>
                                         <option value="">Select Items</option>
-                                        	<option ng-repeat="item in items" value="{{ item.id }}">{{ item.title }}</option>
+                                        	<!-- <option ng-repeat="item in items" value="{{ item.id }}">{{ item.title }}</option> -->
                                     </select>
                                 </td>
                                 <td>{{ get_available_quantity( $index ) }}</td>
