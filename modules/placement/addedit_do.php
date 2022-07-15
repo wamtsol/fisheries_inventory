@@ -119,16 +119,17 @@ if(isset($_POST["action"])){
 					}
 					$i++;
 					$quantity=$item->quantity;
-					$rqq=doquery("select title, quantity from item a inner join supply_item b on a.id = b.item_id  where a.id='".$item->item_id."'", $dblink);
-					//if( numrows( $rqq ) > 0 ) {
+					// echo "select b.quantity as purchase_qty, sum(c.quantity_issued) as issue_qty from supply_item b left join placement_item c on b.item_id = c.item_id  where b.item_id='".$item->item_id."'";die;
+					$rqq=doquery("select title, b.quantity-sum(c.quantity_issued) as stock_balance from item a left join supply_item b on a.id = b.item_id left join placement_item c on a.id = c.item_id  where b.item_id='".$item->item_id."'", $dblink);
+					if( numrows( $rqq ) > 0 ) {
 						$rq = dofetch( $rqq );
-						if($rq['quantity']<$quantity){
-							$err[].=unslash($rq["title"]). "is out of stock. Quantity available:" .$rq['quantity']."<br />";
+						if($rq['stock_balance']<$quantity){
+							$err[].=unslash($rq["title"]). "is out of stock. Quantity available:" .$rq['stock_balance']."<br />";
 						}
-					// }
-					// else{
-					// 	$err[] = "the items have not in the purchase";
-					// }
+					}
+					else{
+						$err[] = "the items have not in the purchase";
+					}
 				}
 			}
 			if( count( $err ) == 0 ) {

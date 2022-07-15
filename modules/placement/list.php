@@ -131,7 +131,7 @@ if(!defined("APP_START")) die("No Direct Access");
                                         ?>
                                         <tr>
                                             <td width="50%"><?php echo get_field($placement_item["item_id"], "item", "title")?></td>
-                                            <td width="25%" class="text-right"><?php echo unslash($placement_item["quantity"])?></td>
+                                            <td width="25%" class="text-right"><?php echo unslash($placement_item["quantity_issued"])?></td>
                                             <td width="25%" class="text-right"><?php echo unslash($placement_item["quantity"])?></td>
                                         </tr>
                                         <?php 

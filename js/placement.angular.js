@@ -112,7 +112,7 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
 		$scope.update_grand_total = function(){
             total = 0;
             for( i = 0; i < $scope.placement.items.length; i++ ) {
-                total += parseFloat( $scope.placement.items[ i ].quantity );
+                total += parseFloat( $scope.placement.items[ i ].quantity_issued );
 			}
 			return total;
         }
