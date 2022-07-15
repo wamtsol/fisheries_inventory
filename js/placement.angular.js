@@ -19,7 +19,7 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
 		};
 		$scope.item = {
 			"id": 0,
-			"item_id": "",
+			"item_id": 0,
 			"quantity": 0,
 			"quantity_issued": 0
 		};
