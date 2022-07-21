@@ -118,9 +118,8 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
         }
 		$scope.update_item = function(position){
             var id = $scope.placement.items[ position ].item_id
-			console.log(id);
-            var item = $filter('filter')($scope.purchase_items, {item_id: id}, true );
-			console.log(item);
+            var item = $filter('filter')($scope.purchase_items, {id: id}, true );
+			// return item;
             if( item.length > 0 ) {
                 item = item[1];
                 $scope.placement.items[ position ].item_id = item.id;
@@ -128,7 +127,8 @@ angular.module('placement', ['ngAnimate', 'angularMoment', 'ui.bootstrap', 'angu
         }
 		$scope.get_available_quantity = function( position ){
             var id = $scope.placement.items[ position ].item_id
-            var item = $filter('filter')($scope.purchase_items, {item_id: id}, true );
+            var item = $filter('filter')($scope.purchase_items, {id: id}, true );
+			// return item;
             if( item.length > 0 ) {
                 return item[0].quantity;
             }

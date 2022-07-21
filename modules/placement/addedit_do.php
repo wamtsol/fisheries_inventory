@@ -55,24 +55,27 @@ if(isset($_POST["action"])){
 					}
 				}
 			}
-			$rs = doquery( "SELECT a.*, b.title, b.id as itemID, c.quantity as issue_qty FROM `supply_item` a left join item b on a.item_id = b.id left join placement_item c on a.item_id = c.item_id where b.status=1", $dblink );
+			$rs = doquery( "SELECT * from item where status=1", $dblink );
 			$purchase_items = array();
 			if( numrows( $rs ) > 0 ) {
 				while( $r = dofetch( $rs ) ) {
+					$purchase = dofetch(doquery("select sum(quantity) as purchase_quantity from supply_item where item_id = '".$r["id"]."'", $dblink));
+					$issue = dofetch(doquery("select sum(quantity_issued) as issue_quantity from placement_item where item_id = '".$r["id"]."'", $dblink));
 					$item_name = unslash($r[ "title" ]);
-					$quantity = $r[ "quantity" ];
+					$quantity = $purchase[ "purchase_quantity" ];
+					$issue_qty = $issue[ "issue_quantity" ];
 					//print_r($items);die;
-					if( isset( $items[ $r[ "item_id" ] ] ) ){
-						$quantity -= $items[ $r[ "item_id" ] ];
-					}
-					if( $quantity > 0 ) {
+					// if( isset( $items[ $r[ "item_id" ] ] ) ){
+					// 	$quantity -= $items[ $r[ "item_id" ] ];
+					// }
+					//if( $quantity > 0 ) {
 						$purchase_items[] = array(
-							"id" => $r[ "id" ],
-							"item_id" => $r[ "itemID" ],
+							"id" => (int)$r[ "id" ],
+							// "item_id" => (int)$r[ "item_id" ],
 							"item_name" => $item_name,
-							"quantity" => $quantity-$r["issue_qty"],
+							"quantity" => $quantity-$issue_qty,
 						);
-					}
+					//}
 				}
 			}
 			$response = $purchase_items;
@@ -119,12 +122,15 @@ if(isset($_POST["action"])){
 					}
 					$i++;
 					$quantity=$item->quantity;
-					// echo "select b.quantity as purchase_qty, sum(c.quantity_issued) as issue_qty from supply_item b left join placement_item c on b.item_id = c.item_id  where b.item_id='".$item->item_id."'";die;
-					$rqq=doquery("select title, b.quantity-sum(c.quantity_issued) as stock_balance from item a left join supply_item b on a.id = b.item_id left join placement_item c on a.id = c.item_id  where b.item_id='".$item->item_id."'", $dblink);
+					// echo "select title, b.quantity-sum(c.quantity_issued) as stock_balance from item a left join supply_item b on a.id = b.item_id left join placement_item c on a.id = c.item_id  where b.item_id='".$item->item_id."'";die;
+					$rqq=doquery("select id, title from item where id='".$item->item_id."'", $dblink);
 					if( numrows( $rqq ) > 0 ) {
 						$rq = dofetch( $rqq );
-						if($rq['stock_balance']<$quantity){
-							$err[].=unslash($rq["title"]). "is out of stock. Quantity available:" .$rq['stock_balance']."<br />";
+						$purchase = dofetch(doquery("select sum(quantity) as purchase_quantity from supply_item where item_id = '".$rq["id"]."'", $dblink));
+						$issue = dofetch(doquery("select sum(quantity_issued) as issue_quantity from placement_item where item_id = '".$rq["id"]."'", $dblink));
+						$balance_stock = $purchase[ "purchase_quantity" ]-$issue[ "issue_quantity" ];
+						if($balance_stock<$quantity){
+							$err[].=unslash($rq["title"]). "is out of stock. Quantity available:" .$balance_stock."<br />";
 						}
 					}
 					else{
