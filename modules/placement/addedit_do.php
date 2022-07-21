@@ -117,7 +117,7 @@ if(isset($_POST["action"])){
 			else {
 				$i=1;
 				foreach( $placement->items as $item ) {
-					if( empty( $item->item_id ) || empty( $item->quantity ) ){
+					if( empty( $item->item_id ) || empty( $item->quantity_issued ) ){
 						$err[] = "Fill all the required fields on Row#".$i;
 					}
 					$i++;
