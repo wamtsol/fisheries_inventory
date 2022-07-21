@@ -121,7 +121,7 @@ if(isset($_POST["action"])){
 						$err[] = "Fill all the required fields on Row#".$i;
 					}
 					$i++;
-					$quantity=$item->quantity;
+					$quantity=$item->quantity_issued;
 					// echo "select title, b.quantity-sum(c.quantity_issued) as stock_balance from item a left join supply_item b on a.id = b.item_id left join placement_item c on a.id = c.item_id  where b.item_id='".$item->item_id."'";die;
 					$rqq=doquery("select id, title from item where id='".$item->item_id."'", $dblink);
 					if( numrows( $rqq ) > 0 ) {
@@ -129,6 +129,7 @@ if(isset($_POST["action"])){
 						$purchase = dofetch(doquery("select sum(quantity) as purchase_quantity from supply_item where item_id = '".$rq["id"]."'", $dblink));
 						$issue = dofetch(doquery("select sum(quantity_issued) as issue_quantity from placement_item where item_id = '".$rq["id"]."'", $dblink));
 						$balance_stock = $purchase[ "purchase_quantity" ]-$issue[ "issue_quantity" ];
+						//echo $quantity;die;
 						if($balance_stock<$quantity){
 							$err[].=unslash($rq["title"]). "is out of stock. Quantity available:" .$balance_stock."<br />";
 						}
