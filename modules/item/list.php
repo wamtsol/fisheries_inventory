@@ -14,6 +14,7 @@ if(!defined("APP_START")) die("No Direct Access");
         	<?php if($admin_type["can_add"]==1){?><a href="item_manage.php?tab=add" class="btn btn-light editproject">Add New Item</a> <?php }?>
             <a id="topstats" class="btn btn-light" href="#"><i class="fa fa-search"></i></a> 
             <a class="btn print-btn" href="item_manage.php?tab=report"><i class="fa fa-print" aria-hidden="true"></i></a>
+            <a class="btn print-btn" href="item_manage.php?tab=report_print">Print</a>
     	</div> 
     </div> 
 </div>

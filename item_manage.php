@@ -6,7 +6,7 @@ include("include/paging.php");
 define("APP_START", 1);
 $filename = 'item_manage.php';
 include("include/admin_type_access.php");
-$tab_array=array("list", "add", "edit", "status", "delete", "bulk_action", "print", "report");
+$tab_array=array("list", "add", "edit", "status", "delete", "bulk_action", "print", "report", "report_print");
 if(isset($_REQUEST["tab"]) && in_array($_REQUEST["tab"], $tab_array)){
 	$tab=$_REQUEST["tab"];
 }
@@ -66,6 +66,9 @@ switch($tab){
 	break;
 	case 'report':
 		include("modules/item/report.php");
+	break;
+	case 'report_print':
+		include("modules/item/report_print.php");
 	break;
 }
 ?>
